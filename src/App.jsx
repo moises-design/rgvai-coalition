@@ -1,9 +1,12 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import SignupForm from './components/SignupForm'
 import SuccessScreen from './components/SuccessScreen'
+import AdminLogin from './components/AdminLogin'
+import AdminDashboard from './components/AdminDashboard'
 import './App.css'
 
-export default function App() {
+function HomePage() {
   const [registrant, setRegistrant] = useState(null)
 
   if (registrant) {
@@ -55,5 +58,24 @@ export default function App() {
         <p>© 2026 RGV AI Coalition · McAllen, TX</p>
       </footer>
     </div>
+  )
+}
+
+function AdminRoute() {
+  const stored = sessionStorage.getItem('admin_token')
+  const [token, setToken] = useState(stored || '')
+
+  if (!token) return <AdminLogin onLogin={setToken} />
+  return <AdminDashboard token={token} />
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/admin" element={<AdminRoute />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
