@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabase'
 
-function MemberLogin() {
+function MemberLogin({ notice }) {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -57,9 +57,12 @@ function MemberLogin() {
         <div className="admin-login-card">
           <div className="event-badge" style={{ marginBottom: '20px' }}>Member Portal</div>
           <h1 className="form-title" style={{ marginBottom: '6px' }}>Sign in</h1>
-          <p className="form-subtitle" style={{ marginBottom: '24px' }}>
+          <p className="form-subtitle" style={{ marginBottom: notice ? '16px' : '24px' }}>
             Enter the email you used to RSVP and we'll send you a magic link.
           </p>
+          {notice && (
+            <div className="member-notice" role="status">{notice}</div>
+          )}
           <form onSubmit={handleSubmit} className="signup-form">
             <div className="field-group">
               <label className="field-label" htmlFor="member-email">Email Address</label>
@@ -146,7 +149,6 @@ function MemberContent({ session }) {
         </div>
 
         <div className="member-grid">
-          {/* Next Meeting */}
           <div className="member-card">
             <h2 className="member-card-title">Next Meeting</h2>
             {meeting ? (
@@ -180,7 +182,6 @@ function MemberContent({ session }) {
             )}
           </div>
 
-          {/* Announcements */}
           <div className="member-card">
             <h2 className="member-card-title">Announcements</h2>
             {announcements.length === 0 ? (
@@ -202,7 +203,6 @@ function MemberContent({ session }) {
             )}
           </div>
 
-          {/* RSVP Info */}
           {rsvp && (
             <div className="member-card">
               <h2 className="member-card-title">Your RSVP</h2>
@@ -248,22 +248,66 @@ function MemberContent({ session }) {
   )
 }
 
+// Case 2: detect expired/invalid magic link from URL params at render time,
+// using lazy initializers so no setState is called inside an effect.
+function getUrlError() {
+  const p = new URLSearchParams(window.location.search)
+  const h = new URLSearchParams(window.location.hash.slice(1))
+  return p.get('error_code') || h.get('error_code') || ''
+}
+
 export default function MemberPortal() {
-  const [session, setSession] = useState(undefined)
+  const [notice, setNotice] = useState(() => {
+    const code = getUrlError()
+    if (!code) return ''
+    window.history.replaceState(null, '', '/member')
+    return code === 'otp_expired'
+      ? 'Your login link has expired. Enter your email to get a new one.'
+      : 'This login link is invalid. Enter your email to get a new one.'
+  })
+
+  // Start as null (show login) when URL had an error; undefined (loading) otherwise
+  const [session, setSession] = useState(() => getUrlError() ? null : undefined)
+  const wasSignedIn = useRef(false)
+  // Skip session loading when the URL already told us authentication failed
+  const skipLoad = useRef(!!getUrlError())
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+    if (skipLoad.current) return
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session)
+    let mounted = true
+
+    // Use mounted guard so a stale promise never calls setState after unmount
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      if (!mounted) return
+      setSession(s)
+      if (s) wasSignedIn.current = true
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+      if (!mounted) return
       if (event === 'SIGNED_IN') {
+        wasSignedIn.current = true
+        setSession(s)
         window.history.replaceState(null, '', '/member')
       }
+      // Case 3: session expires while user is on the member page
+      if (event === 'SIGNED_OUT') {
+        if (wasSignedIn.current) {
+          setNotice('Your session expired. Enter your email to sign in again.')
+        }
+        setSession(null)
+      }
     })
-    return () => subscription.unsubscribe()
-  }, [])
 
-  if (session === undefined) return null
-  if (!session) return <MemberLogin />
+    // Cleanup: prevents stale setState calls and removes the listener on unmount
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, []) // intentionally empty — runs once on mount
+
+  if (session === undefined) return null // still resolving — render nothing briefly
+  if (!session) return <MemberLogin notice={notice} />
   return <MemberContent session={session} />
 }

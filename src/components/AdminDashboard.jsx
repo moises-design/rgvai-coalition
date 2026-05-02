@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 
 const RSVP_COLUMNS = [
@@ -43,17 +43,21 @@ function RsvpTab({ token }) {
   const [sending, setSending] = useState(false)
   const [sendResult, setSendResult] = useState(null)
 
-  const fetchRsvps = useCallback(async () => {
-    setLoading(true)
-    setFetchError('')
-    const res = await fetch('/api/rsvps', { headers: { 'x-admin-token': token } })
-    const data = await res.json()
-    if (!res.ok) { setFetchError(data.error || 'Failed to load RSVPs.') }
-    else { setRsvps(data) }
-    setLoading(false)
+  useEffect(() => {
+    let active = true
+    async function load() {
+      setLoading(true)
+      setFetchError('')
+      const res = await fetch('/api/rsvps', { headers: { 'x-admin-token': token } })
+      const data = await res.json()
+      if (!active) return
+      if (!res.ok) setFetchError(data.error || 'Failed to load RSVPs.')
+      else setRsvps(data)
+      setLoading(false)
+    }
+    load()
+    return () => { active = false }
   }, [token])
-
-  useEffect(() => { fetchRsvps() }, [fetchRsvps])
 
   const sorted = [...rsvps].sort((a, b) => {
     const diff = new Date(a.created_at) - new Date(b.created_at)
@@ -223,7 +227,12 @@ function AnnouncementsTab({ token }) {
     setAnnouncements(data || [])
   }
 
-  useEffect(() => { loadAnnouncements() }, [])
+  useEffect(() => {
+    let active = true
+    supabase.from('announcements').select('*').order('created_at', { ascending: false })
+      .then(({ data }) => { if (active) setAnnouncements(data || []) })
+    return () => { active = false }
+  }, [])
 
   async function handlePost(e) {
     e.preventDefault()

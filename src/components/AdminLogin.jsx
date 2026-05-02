@@ -3,16 +3,25 @@ import { useState } from 'react'
 export default function AdminLogin({ onLogin }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    if (password === import.meta.env.VITE_ADMIN_PASSWORD) {
-      sessionStorage.setItem('admin_token', password)
-      onLogin(password)
-    } else {
+    setLoading(true)
+    setError('')
+    const res = await fetch('/api/admin-auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    })
+    setLoading(false)
+    if (!res.ok) {
       setError('Incorrect password.')
       setPassword('')
+      return
     }
+    sessionStorage.setItem('admin_token', password)
+    onLogin(password)
   }
 
   return (
@@ -37,7 +46,14 @@ export default function AdminLogin({ onLogin }) {
               />
               {error && <span className="error-msg">{error}</span>}
             </div>
-            <button type="submit" className="submit-btn">Enter</button>
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? (
+                <span className="btn-loading">
+                  <span className="spinner" aria-hidden="true" />
+                  Checking…
+                </span>
+              ) : 'Enter'}
+            </button>
           </form>
         </div>
       </main>
