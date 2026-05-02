@@ -61,6 +61,11 @@ export default function SignupForm({ onSuccess }) {
       }
       return
     }
+    // Send magic link so they can access the member portal
+    await supabase.auth.signInWithOtp({
+      email: form.email.trim().toLowerCase(),
+      options: { emailRedirectTo: `${window.location.origin}/member` },
+    })
     onSuccess({ name: form.name, email: form.email })
   }
 

@@ -4,6 +4,7 @@ import SignupForm from './components/SignupForm'
 import SuccessScreen from './components/SuccessScreen'
 import AdminLogin from './components/AdminLogin'
 import AdminDashboard from './components/AdminDashboard'
+import MemberPortal from './components/MemberPortal'
 import './App.css'
 
 function HomePage() {
@@ -75,6 +76,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AdminRoute />} />
+        <Route path="/member" element={<MemberPortal />} />
       </Routes>
     </BrowserRouter>
   )

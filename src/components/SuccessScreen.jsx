@@ -20,6 +20,10 @@ export default function SuccessScreen({ name, email }) {
             <span className="detail-label">Confirmation sent to</span>
             <span className="detail-value">{email}</span>
           </div>
+          <div className="success-magic-link-note">
+            <span className="event-detail-icon" aria-hidden="true">◈</span>
+            <p>We also sent a <strong>member portal link</strong> to your email — click it to see meeting details and announcements.</p>
+          </div>
           <p className="success-footer">
             Share the word — the RGV AI Coalition is just getting started.
           </p>

@@ -1,0 +1,269 @@
+import { useEffect, useState } from 'react'
+import { supabase } from '../supabase'
+
+function MemberLogin() {
+  const [email, setEmail] = useState('')
+  const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    if (!email.trim()) { setError('Email is required'); return }
+    setLoading(true)
+    setError('')
+    const { error: authError } = await supabase.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: {
+        emailRedirectTo: `${window.location.origin}/member`,
+        shouldCreateUser: false,
+      },
+    })
+    setLoading(false)
+    if (authError) {
+      setError('No RSVP found for that email. Please sign up first.')
+      return
+    }
+    setSent(true)
+  }
+
+  if (sent) {
+    return (
+      <div className="page">
+        <header className="site-header">
+          <span className="logo-badge">RGV AI</span>
+        </header>
+        <main className="success-container">
+          <div className="success-card">
+            <div className="success-icon" aria-hidden="true">✦</div>
+            <h1 className="success-title">Check your email</h1>
+            <p className="success-body">
+              We sent a login link to <strong>{email}</strong>.
+              Click it to access your member page.
+            </p>
+            <p className="success-footer">Link expires in 1 hour. Didn't get it? Check spam or try again.</p>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  return (
+    <div className="page">
+      <header className="site-header">
+        <span className="logo-badge">RGV AI</span>
+      </header>
+      <main className="success-container">
+        <div className="admin-login-card">
+          <div className="event-badge" style={{ marginBottom: '20px' }}>Member Portal</div>
+          <h1 className="form-title" style={{ marginBottom: '6px' }}>Sign in</h1>
+          <p className="form-subtitle" style={{ marginBottom: '24px' }}>
+            Enter the email you used to RSVP and we'll send you a magic link.
+          </p>
+          <form onSubmit={handleSubmit} className="signup-form">
+            <div className="field-group">
+              <label className="field-label" htmlFor="member-email">Email Address</label>
+              <input
+                id="member-email"
+                type="email"
+                className={`field-input${error ? ' field-error' : ''}`}
+                placeholder="jane@example.com"
+                value={email}
+                onChange={e => { setEmail(e.target.value); setError('') }}
+                autoComplete="email"
+                autoFocus
+              />
+              {error && <span className="error-msg">{error}</span>}
+            </div>
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? (
+                <span className="btn-loading">
+                  <span className="spinner" aria-hidden="true" />
+                  Sending…
+                </span>
+              ) : 'Send magic link →'}
+            </button>
+          </form>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+function MemberContent({ session }) {
+  const [rsvp, setRsvp] = useState(null)
+  const [meeting, setMeeting] = useState(null)
+  const [announcements, setAnnouncements] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadData() {
+      const [rsvpRes, meetingRes, announcementsRes] = await Promise.all([
+        supabase.from('rsvps').select('name, email, phone, ai_primary, ai_secondary, created_at')
+          .eq('email', session.user.email).single(),
+        supabase.from('meeting_details').select('*').eq('id', 1).single(),
+        supabase.from('announcements').select('*').order('created_at', { ascending: false }),
+      ])
+      setRsvp(rsvpRes.data)
+      setMeeting(meetingRes.data)
+      setAnnouncements(announcementsRes.data || [])
+      setLoading(false)
+    }
+    loadData()
+  }, [session.user.email])
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    window.location.href = '/'
+  }
+
+  if (loading) {
+    return (
+      <div className="page">
+        <header className="site-header"><span className="logo-badge">RGV AI</span></header>
+        <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: 'var(--text-muted)' }}>Loading…</span>
+        </main>
+      </div>
+    )
+  }
+
+  return (
+    <div className="page">
+      <header className="site-header" style={{ justifyContent: 'space-between' }}>
+        <span className="logo-badge">RGV AI</span>
+        <button className="admin-btn" onClick={handleSignOut} style={{ fontSize: '0.78rem' }}>
+          Sign out
+        </button>
+      </header>
+
+      <main className="member-main">
+        <div className="member-greeting">
+          <div className="event-badge">Member Portal</div>
+          <h1 className="hero-title" style={{ fontSize: '2rem', marginTop: '16px' }}>
+            Welcome back{rsvp ? `, ${rsvp.name.split(' ')[0]}` : ''}.
+          </h1>
+        </div>
+
+        <div className="member-grid">
+          {/* Next Meeting */}
+          <div className="member-card">
+            <h2 className="member-card-title">Next Meeting</h2>
+            {meeting ? (
+              <div className="event-details" style={{ gap: '12px' }}>
+                <div className="event-detail-item">
+                  <span className="event-detail-icon" aria-hidden="true">◈</span>
+                  <div>
+                    <span className="event-detail-label">When</span>
+                    <span className="event-detail-value">{meeting.event_date} · {meeting.event_time}</span>
+                  </div>
+                </div>
+                <div className="event-detail-item">
+                  <span className="event-detail-icon" aria-hidden="true">◈</span>
+                  <div>
+                    <span className="event-detail-label">Where</span>
+                    <span className="event-detail-value">{meeting.location}</span>
+                  </div>
+                </div>
+                {meeting.notes && (
+                  <div className="event-detail-item">
+                    <span className="event-detail-icon" aria-hidden="true">◈</span>
+                    <div>
+                      <span className="event-detail-label">Notes</span>
+                      <span className="event-detail-value">{meeting.notes}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Details coming soon.</p>
+            )}
+          </div>
+
+          {/* Announcements */}
+          <div className="member-card">
+            <h2 className="member-card-title">Announcements</h2>
+            {announcements.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No announcements yet.</p>
+            ) : (
+              <div className="announcement-list">
+                {announcements.map(a => (
+                  <div key={a.id} className="announcement-item">
+                    <p className="announcement-title">{a.title}</p>
+                    <p className="announcement-body">{a.body}</p>
+                    <p className="announcement-date">
+                      {new Date(a.created_at).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric', year: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* RSVP Info */}
+          {rsvp && (
+            <div className="member-card">
+              <h2 className="member-card-title">Your RSVP</h2>
+              <div className="rsvp-info-grid">
+                <div className="rsvp-info-item">
+                  <span className="event-detail-label">Name</span>
+                  <span className="event-detail-value">{rsvp.name}</span>
+                </div>
+                <div className="rsvp-info-item">
+                  <span className="event-detail-label">Email</span>
+                  <span className="event-detail-value">{rsvp.email}</span>
+                </div>
+                {rsvp.phone && (
+                  <div className="rsvp-info-item">
+                    <span className="event-detail-label">Phone</span>
+                    <span className="event-detail-value">{rsvp.phone}</span>
+                  </div>
+                )}
+                <div className="rsvp-info-item">
+                  <span className="event-detail-label">Primary AI Tool</span>
+                  <span className="event-detail-value">{rsvp.ai_primary}</span>
+                </div>
+                {rsvp.ai_secondary && (
+                  <div className="rsvp-info-item">
+                    <span className="event-detail-label">Secondary AI Tool</span>
+                    <span className="event-detail-value">{rsvp.ai_secondary}</span>
+                  </div>
+                )}
+                <div className="rsvp-info-item">
+                  <span className="event-detail-label">Signed Up</span>
+                  <span className="event-detail-value">
+                    {new Date(rsvp.created_at).toLocaleDateString('en-US', {
+                      month: 'long', day: 'numeric', year: 'numeric'
+                    })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  )
+}
+
+export default function MemberPortal() {
+  const [session, setSession] = useState(undefined)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session)
+      if (event === 'SIGNED_IN') {
+        window.history.replaceState(null, '', '/member')
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  if (session === undefined) return null
+  if (!session) return <MemberLogin />
+  return <MemberContent session={session} />
+}
