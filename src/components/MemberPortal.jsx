@@ -135,7 +135,9 @@ function MemberContent({ session }) {
         supabase.from('meeting_details').select('*').eq('id', 1).single(),
         supabase.from('announcements').select('*').order('created_at', { ascending: false }),
         supabase.from('resources').select('*').order('created_at', { ascending: false }),
-        fetch(`/api/confirm-attendance?email=${encodeURIComponent(email)}`).then(r => r.json()),
+        fetch('/api/confirm-attendance', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        }).then(r => r.json()),
       ])
       setRsvp(rsvpRes.data)
       setMeeting(meetingRes.data)
@@ -151,7 +153,10 @@ function MemberContent({ session }) {
     setConfirming(true)
     const res = await fetch('/api/confirm-attendance', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
       body: JSON.stringify({ email: session.user.email }),
     })
     if (res.ok) setConfirmed(true)

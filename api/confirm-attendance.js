@@ -5,6 +5,14 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+async function getSessionUser(req) {
+  const auth = req.headers.authorization
+  if (!auth?.startsWith('Bearer ')) return null
+  const { data: { user }, error } = await supabase.auth.getUser(auth.slice(7))
+  if (error || !user) return null
+  return user
+}
+
 function isAdmin(req) {
   const token = req.headers['x-admin-token']
   return token === process.env.ADMIN_PASSWORD || token === process.env.SUPER_ADMIN_PASSWORD
@@ -26,11 +34,12 @@ export default async function handler(req, res) {
       return res.status(200).json(data)
     }
 
-    const { email } = req.query
-    if (!email) return res.status(400).json({ error: 'Email or admin token required' })
+    // Member: must be authenticated — returns their own confirmation status
+    const user = await getSessionUser(req)
+    if (!user) return res.status(401).json({ error: 'Unauthorized' })
 
     const { data: rsvp } = await supabase
-      .from('rsvps').select('id').eq('email', email.toLowerCase()).single()
+      .from('rsvps').select('id').eq('email', user.email).single()
     if (!rsvp) return res.status(200).json({ confirmed: false })
 
     const { data: conf } = await supabase
@@ -40,11 +49,18 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
+    // Require authenticated session — session email must match request email
+    const user = await getSessionUser(req)
+    if (!user) return res.status(401).json({ error: 'Unauthorized' })
+
     const { email } = req.body
     if (!email?.trim()) return res.status(400).json({ error: 'Email is required' })
+    if (email.trim().toLowerCase() !== user.email.toLowerCase()) {
+      return res.status(403).json({ error: 'Forbidden' })
+    }
 
     const { data: rsvp } = await supabase
-      .from('rsvps').select('id').eq('email', email.trim().toLowerCase()).single()
+      .from('rsvps').select('id').eq('email', user.email).single()
     if (!rsvp) return res.status(404).json({ error: 'No RSVP found for that email' })
 
     const { error } = await supabase.from('meeting_confirmations')
