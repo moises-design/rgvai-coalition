@@ -26,6 +26,25 @@ function RoleBadge({ role }) {
   )
 }
 
+const CATEGORY_COLORS = {
+  article: { color: '#60a5fa', bg: 'rgba(96,165,250,0.1)' },
+  tool:    { color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
+  video:   { color: '#fb923c', bg: 'rgba(251,146,60,0.1)' },
+  other:   { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' },
+}
+
+function CategoryBadge({ category }) {
+  const s = CATEGORY_COLORS[category] || CATEGORY_COLORS.other
+  return (
+    <span style={{
+      fontSize: '0.68rem', fontWeight: 700, padding: '2px 6px', borderRadius: '3px',
+      color: s.color, background: s.bg, textTransform: 'uppercase', letterSpacing: '0.05em',
+    }}>
+      {category}
+    </span>
+  )
+}
+
 // ── Members Tab ───────────────────────────────────────────────────────────────
 function MembersTab({ token }) {
   const [members, setMembers] = useState([])
@@ -189,7 +208,6 @@ function AnalyticsTab() {
   if (loading) return <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>Loading…</div>
   if (members.length === 0) return <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>No data yet.</div>
 
-  // Signups per week (last 8 weeks)
   const now = new Date()
   const weeks = Array.from({ length: 8 }, (_, i) => {
     const start = new Date(now)
@@ -206,7 +224,6 @@ function AnalyticsTab() {
   })
   const maxWeekCount = Math.max(...weeks.map(w => w.count), 1)
 
-  // AI tools breakdown
   const toolCounts = {}
   members.forEach(m => {
     if (m.ai_primary) toolCounts[m.ai_primary] = (toolCounts[m.ai_primary] || 0) + 1
@@ -215,7 +232,6 @@ function AnalyticsTab() {
   const tools = Object.entries(toolCounts).sort((a, b) => b[1] - a[1])
   const maxToolCount = Math.max(...tools.map(t => t[1]), 1)
 
-  // Growth rate
   const last30 = members.filter(m => new Date(m.created_at) > new Date(Date.now() - 30 * 86400000)).length
   const prev30 = members.filter(m => {
     const d = new Date(m.created_at)
@@ -234,7 +250,6 @@ function AnalyticsTab() {
         <h2 className="form-title" style={{ fontSize: '1.3rem' }}>Analytics</h2>
       </div>
 
-      {/* Stats row */}
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '32px' }}>
         <div style={statStyle}>
           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Total Signups</p>
@@ -257,7 +272,6 @@ function AnalyticsTab() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-        {/* Weekly signups chart */}
         <div style={{ background: 'var(--card-bg, #0c1524)', border: '1px solid var(--border)', borderRadius: '10px', padding: '24px' }}>
           <h3 style={{ margin: '0 0 20px', fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Signups per Week</h3>
           <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '120px' }}>
@@ -277,7 +291,6 @@ function AnalyticsTab() {
           </div>
         </div>
 
-        {/* AI tools breakdown */}
         <div style={{ background: 'var(--card-bg, #0c1524)', border: '1px solid var(--border)', borderRadius: '10px', padding: '24px', overflowY: 'auto', maxHeight: '280px' }}>
           <h3 style={{ margin: '0 0 16px', fontSize: '0.9rem', color: 'var(--text-secondary)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>AI Tools</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -382,7 +395,6 @@ function CommunicationsTab({ token }) {
       </div>
 
       <div className="announcements-layout">
-        {/* Post announcement */}
         <div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
             Post a new announcement — all members will see it when they log in.
@@ -406,7 +418,6 @@ function CommunicationsTab({ token }) {
             </button>
           </form>
 
-          {/* Email blast */}
           <div style={{ marginTop: '32px', padding: '20px', background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.15)', borderRadius: '8px' }}>
             <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>Email Blast</h3>
             <div className="field-group" style={{ marginBottom: '16px' }}>
@@ -434,7 +445,6 @@ function CommunicationsTab({ token }) {
           </div>
         </div>
 
-        {/* Announcements list */}
         <div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
             {announcements.length} posted
@@ -471,6 +481,9 @@ function MeetingsTab({ token }) {
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [history, setHistory] = useState([])
+  const [confirmations, setConfirmations] = useState([])
+  const [confLoading, setConfLoading] = useState(true)
+  const [totalMembers, setTotalMembers] = useState(0)
 
   useEffect(() => {
     supabase.from('meeting_details').select('*').eq('id', 1).single()
@@ -479,7 +492,12 @@ function MeetingsTab({ token }) {
       })
     supabase.from('meetings_history').select('*').order('recorded_at', { ascending: false }).limit(20)
       .then(({ data }) => setHistory(data || []))
-  }, [])
+    fetch('/api/confirm-attendance', { headers: { 'x-admin-token': token } })
+      .then(r => r.json())
+      .then(data => { setConfirmations(Array.isArray(data) ? data : []); setConfLoading(false) })
+    supabase.from('rsvps').select('id', { count: 'exact', head: true })
+      .then(({ count }) => setTotalMembers(count || 0))
+  }, [token])
 
   async function handleSave(e) {
     e.preventDefault()
@@ -499,6 +517,14 @@ function MeetingsTab({ token }) {
       .then(({ data: h }) => setHistory(h || []))
   }
 
+  async function handleResetConfirmations() {
+    await fetch('/api/confirm-attendance', {
+      method: 'DELETE',
+      headers: { 'x-superadmin-token': token },
+    })
+    setConfirmations([])
+  }
+
   return (
     <>
       <div className="admin-tab-header">
@@ -506,7 +532,6 @@ function MeetingsTab({ token }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
-        {/* Meeting form */}
         <div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
             Update the current meeting. Members see this in real time.
@@ -544,7 +569,6 @@ function MeetingsTab({ token }) {
           </form>
         </div>
 
-        {/* History log */}
         <div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
             Meeting history ({history.length} entries)
@@ -552,7 +576,7 @@ function MeetingsTab({ token }) {
           {history.length === 0 ? (
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No history yet. Save a meeting to start logging.</p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '480px', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '400px', overflowY: 'auto' }}>
               {history.map(h => (
                 <div key={h.id} style={{ padding: '14px', background: 'var(--card-bg, #0c1524)', border: '1px solid var(--border)', borderRadius: '8px' }}>
                   <p style={{ margin: '0 0 4px', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
@@ -569,12 +593,172 @@ function MeetingsTab({ token }) {
           )}
         </div>
       </div>
+
+      {/* Confirmations section */}
+      <div style={{ marginTop: '32px', padding: '24px', background: 'var(--card-bg, #0c1524)', border: '1px solid var(--border)', borderRadius: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>Attendance Confirmations</h3>
+            {!confLoading && (
+              <p style={{ margin: '4px 0 0', fontSize: '0.88rem', color: 'var(--cyan)' }}>
+                {confirmations.length} confirmed{totalMembers > 0 ? ` of ${totalMembers} total` : ''}
+              </p>
+            )}
+          </div>
+          <button
+            className="admin-btn"
+            style={{ fontSize: '0.78rem', color: 'var(--error)', borderColor: 'rgba(255,77,109,0.3)' }}
+            onClick={handleResetConfirmations}
+            disabled={confirmations.length === 0}
+          >
+            Reset
+          </button>
+        </div>
+        {confLoading ? (
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Loading…</p>
+        ) : confirmations.length === 0 ? (
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>No confirmations yet.</p>
+        ) : (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {confirmations.map(c => (
+              <div key={c.id} style={{ padding: '6px 12px', background: 'rgba(34,211,238,0.06)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: '6px' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>{c.rsvps?.name}</span>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginLeft: '8px' }}>{c.rsvps?.email}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  )
+}
+
+// ── Resources Tab ─────────────────────────────────────────────────────────────
+function ResourcesTab({ token }) {
+  const [resources, setResources] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [form, setForm] = useState({ title: '', url: '', description: '', category: 'article' })
+  const [posting, setPosting] = useState(false)
+  const [error, setError] = useState('')
+
+  async function loadResources() {
+    const { data } = await supabase.from('resources').select('*').order('created_at', { ascending: false })
+    setResources(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { loadResources() }, [])
+
+  async function handleAdd(e) {
+    e.preventDefault()
+    if (!form.title.trim() || !form.url.trim()) { setError('Title and URL are required.'); return }
+    setPosting(true)
+    setError('')
+    const res = await fetch('/api/resources', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-superadmin-token': token },
+      body: JSON.stringify(form),
+    })
+    setPosting(false)
+    if (!res.ok) { const d = await res.json(); setError(d.error || 'Failed to add.'); return }
+    setForm({ title: '', url: '', description: '', category: 'article' })
+    loadResources()
+  }
+
+  async function handleDelete(id) {
+    await fetch(`/api/resources?id=${id}`, { method: 'DELETE', headers: { 'x-superadmin-token': token } })
+    setResources(p => p.filter(r => r.id !== id))
+  }
+
+  return (
+    <>
+      <div className="admin-tab-header">
+        <h2 className="form-title" style={{ fontSize: '1.3rem' }}>Resource Library</h2>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
+        <div>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+            Add a resource — members see it in their portal.
+          </p>
+          <form onSubmit={handleAdd} className="signup-form">
+            <div className="field-group">
+              <label className="field-label" htmlFor="r-title">Title</label>
+              <input id="r-title" className="field-input" value={form.title}
+                onChange={e => { setForm(p => ({ ...p, title: e.target.value })); setError('') }}
+                placeholder="Intro to Prompt Engineering" />
+            </div>
+            <div className="field-group">
+              <label className="field-label" htmlFor="r-url">URL</label>
+              <input id="r-url" type="url" className="field-input" value={form.url}
+                onChange={e => { setForm(p => ({ ...p, url: e.target.value })); setError('') }}
+                placeholder="https://…" />
+            </div>
+            <div className="field-group">
+              <label className="field-label" htmlFor="r-desc">Description <span className="optional-tag">optional</span></label>
+              <input id="r-desc" className="field-input" value={form.description}
+                onChange={e => setForm(p => ({ ...p, description: e.target.value }))}
+                placeholder="Short description…" />
+            </div>
+            <div className="field-group">
+              <label className="field-label" htmlFor="r-cat">Category</label>
+              <div className="select-wrapper">
+                <select id="r-cat" className="field-input field-select" value={form.category}
+                  onChange={e => setForm(p => ({ ...p, category: e.target.value }))}>
+                  <option value="article">Article</option>
+                  <option value="tool">Tool</option>
+                  <option value="video">Video</option>
+                  <option value="other">Other</option>
+                </select>
+                <span className="select-arrow" aria-hidden="true">▾</span>
+              </div>
+            </div>
+            {error && <div className="server-error" role="alert">{error}</div>}
+            <button type="submit" className="submit-btn" disabled={posting}>
+              {posting ? 'Adding…' : 'Add Resource'}
+            </button>
+          </form>
+        </div>
+
+        <div>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+            {resources.length} resource{resources.length !== 1 ? 's' : ''} posted
+          </p>
+          {loading ? (
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Loading…</p>
+          ) : resources.length === 0 ? (
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No resources yet.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxHeight: '480px', overflowY: 'auto' }}>
+              {resources.map(r => (
+                <div key={r.id} style={{ padding: '14px', background: 'var(--card-bg, #0c1524)', border: '1px solid var(--border)', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <CategoryBadge category={r.category} />
+                      <p style={{ margin: '6px 0 0', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{r.title}</p>
+                      {r.description && <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>{r.description}</p>}
+                      <a href={r.url} target="_blank" rel="noopener noreferrer"
+                        style={{ display: 'inline-block', marginTop: '6px', fontSize: '0.75rem', color: 'var(--cyan)', opacity: 0.8, wordBreak: 'break-all' }}>
+                        {r.url}
+                      </a>
+                    </div>
+                    <button className="admin-btn" onClick={() => handleDelete(r.id)}
+                      style={{ fontSize: '0.72rem', padding: '4px 10px', flexShrink: 0, color: 'var(--error)', borderColor: 'rgba(255,77,109,0.3)' }}>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </>
   )
 }
 
 // ── Main Dashboard ────────────────────────────────────────────────────────────
-const TABS = ['Members', 'Analytics', 'Communications', 'Meetings']
+const TABS = ['Members', 'Analytics', 'Communications', 'Meetings', 'Resources']
 
 export default function SuperAdminDashboard({ token }) {
   const [activeTab, setActiveTab] = useState('Members')
@@ -604,6 +788,7 @@ export default function SuperAdminDashboard({ token }) {
           {activeTab === 'Analytics'      && <AnalyticsTab />}
           {activeTab === 'Communications' && <CommunicationsTab token={token} />}
           {activeTab === 'Meetings'       && <MeetingsTab token={token} />}
+          {activeTab === 'Resources'      && <ResourcesTab token={token} />}
         </div>
       </main>
 

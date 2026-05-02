@@ -2,6 +2,25 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
+const CATEGORY_COLORS = {
+  article: { color: '#60a5fa', bg: 'rgba(96,165,250,0.1)' },
+  tool:    { color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
+  video:   { color: '#fb923c', bg: 'rgba(251,146,60,0.1)' },
+  other:   { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' },
+}
+
+function CategoryBadge({ category }) {
+  const s = CATEGORY_COLORS[category] || CATEGORY_COLORS.other
+  return (
+    <span style={{
+      fontSize: '0.68rem', fontWeight: 700, padding: '2px 6px', borderRadius: '3px',
+      color: s.color, background: s.bg, textTransform: 'uppercase', letterSpacing: '0.05em',
+    }}>
+      {category}
+    </span>
+  )
+}
+
 function MemberLogin({ notice }) {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -102,23 +121,42 @@ function MemberContent({ session }) {
   const [rsvp, setRsvp] = useState(null)
   const [meeting, setMeeting] = useState(null)
   const [announcements, setAnnouncements] = useState([])
+  const [resources, setResources] = useState([])
+  const [confirmed, setConfirmed] = useState(false)
+  const [confirming, setConfirming] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadData() {
-      const [rsvpRes, meetingRes, announcementsRes] = await Promise.all([
+      const email = session.user.email
+      const [rsvpRes, meetingRes, announcementsRes, resourcesRes, confirmRes] = await Promise.all([
         supabase.from('rsvps').select('name, email, phone, ai_primary, ai_secondary, created_at')
-          .eq('email', session.user.email).single(),
+          .eq('email', email).single(),
         supabase.from('meeting_details').select('*').eq('id', 1).single(),
         supabase.from('announcements').select('*').order('created_at', { ascending: false }),
+        supabase.from('resources').select('*').order('created_at', { ascending: false }),
+        fetch(`/api/confirm-attendance?email=${encodeURIComponent(email)}`).then(r => r.json()),
       ])
       setRsvp(rsvpRes.data)
       setMeeting(meetingRes.data)
       setAnnouncements(announcementsRes.data || [])
+      setResources(resourcesRes.data || [])
+      setConfirmed(confirmRes.confirmed || false)
       setLoading(false)
     }
     loadData()
   }, [session.user.email])
+
+  async function handleConfirm() {
+    setConfirming(true)
+    const res = await fetch('/api/confirm-attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: session.user.email }),
+    })
+    if (res.ok) setConfirmed(true)
+    setConfirming(false)
+  }
 
   async function handleSignOut() {
     await supabase.auth.signOut()
@@ -157,31 +195,54 @@ function MemberContent({ session }) {
           <div className="member-card">
             <h2 className="member-card-title">Next Meeting</h2>
             {meeting ? (
-              <div className="event-details" style={{ gap: '12px' }}>
-                <div className="event-detail-item">
-                  <span className="event-detail-icon" aria-hidden="true">◈</span>
-                  <div>
-                    <span className="event-detail-label">When</span>
-                    <span className="event-detail-value">{meeting.event_date} · {meeting.event_time}</span>
-                  </div>
-                </div>
-                <div className="event-detail-item">
-                  <span className="event-detail-icon" aria-hidden="true">◈</span>
-                  <div>
-                    <span className="event-detail-label">Where</span>
-                    <span className="event-detail-value">{meeting.location}</span>
-                  </div>
-                </div>
-                {meeting.notes && (
+              <>
+                <div className="event-details" style={{ gap: '12px' }}>
                   <div className="event-detail-item">
                     <span className="event-detail-icon" aria-hidden="true">◈</span>
                     <div>
-                      <span className="event-detail-label">Notes</span>
-                      <span className="event-detail-value">{meeting.notes}</span>
+                      <span className="event-detail-label">When</span>
+                      <span className="event-detail-value">{meeting.event_date} · {meeting.event_time}</span>
                     </div>
                   </div>
-                )}
-              </div>
+                  <div className="event-detail-item">
+                    <span className="event-detail-icon" aria-hidden="true">◈</span>
+                    <div>
+                      <span className="event-detail-label">Where</span>
+                      <span className="event-detail-value">{meeting.location}</span>
+                    </div>
+                  </div>
+                  {meeting.notes && (
+                    <div className="event-detail-item">
+                      <span className="event-detail-icon" aria-hidden="true">◈</span>
+                      <div>
+                        <span className="event-detail-label">Notes</span>
+                        <span className="event-detail-value">{meeting.notes}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
+                  {confirmed ? (
+                    <div style={{ color: '#4ade80', fontSize: '0.88rem', fontWeight: 600 }}>
+                      ✓ You're confirmed for this meeting
+                    </div>
+                  ) : (
+                    <button
+                      className="submit-btn"
+                      style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+                      onClick={handleConfirm}
+                      disabled={confirming}
+                    >
+                      {confirming ? (
+                        <span className="btn-loading">
+                          <span className="spinner" aria-hidden="true" />
+                          Confirming…
+                        </span>
+                      ) : 'Confirm My Attendance →'}
+                    </button>
+                  )}
+                </div>
+              </>
             ) : (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Details coming soon.</p>
             )}
@@ -202,6 +263,36 @@ function MemberContent({ session }) {
                         month: 'short', day: 'numeric', year: 'numeric'
                       })}
                     </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="member-card">
+            <h2 className="member-card-title">Resource Library</h2>
+            {resources.length === 0 ? (
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No resources posted yet.</p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                {resources.map(r => (
+                  <div key={r.id}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                      <CategoryBadge category={r.category} />
+                      <a
+                        href={r.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.9rem', textDecoration: 'none' }}
+                      >
+                        {r.title} →
+                      </a>
+                    </div>
+                    {r.description && (
+                      <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)', paddingLeft: '0' }}>
+                        {r.description}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -253,8 +344,6 @@ function MemberContent({ session }) {
   )
 }
 
-// Case 2: detect expired/invalid magic link from URL params at render time,
-// using lazy initializers so no setState is called inside an effect.
 function getUrlError() {
   const p = new URLSearchParams(window.location.search)
   const h = new URLSearchParams(window.location.hash.slice(1))
@@ -271,10 +360,8 @@ export default function MemberPortal() {
       : 'This login link is invalid. Enter your email to get a new one.'
   })
 
-  // Start as null (show login) when URL had an error; undefined (loading) otherwise
   const [session, setSession] = useState(() => getUrlError() ? null : undefined)
   const wasSignedIn = useRef(false)
-  // Skip session loading when the URL already told us authentication failed
   const skipLoad = useRef(!!getUrlError())
 
   useEffect(() => {
@@ -282,7 +369,6 @@ export default function MemberPortal() {
 
     let mounted = true
 
-    // Use mounted guard so a stale promise never calls setState after unmount
     supabase.auth.getSession().then(({ data: { session: s } }) => {
       if (!mounted) return
       setSession(s)
@@ -296,7 +382,6 @@ export default function MemberPortal() {
         setSession(s)
         window.history.replaceState(null, '', '/member')
       }
-      // Case 3: session expires while user is on the member page
       if (event === 'SIGNED_OUT') {
         if (wasSignedIn.current) {
           setNotice('Your session expired. Enter your email to sign in again.')
@@ -305,14 +390,13 @@ export default function MemberPortal() {
       }
     })
 
-    // Cleanup: prevents stale setState calls and removes the listener on unmount
     return () => {
       mounted = false
       subscription.unsubscribe()
     }
-  }, []) // intentionally empty — runs once on mount
+  }, [])
 
-  if (session === undefined) return null // still resolving — render nothing briefly
+  if (session === undefined) return null
   if (!session) return <MemberLogin notice={notice} />
   return <MemberContent session={session} />
 }

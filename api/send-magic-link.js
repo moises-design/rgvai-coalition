@@ -23,7 +23,7 @@ function buildEmail(actionLink) {
           <h1 style="margin:0;font-size:26px;font-weight:800;color:#f0f6ff;">Your member portal link</h1>
         </td></tr>
         <tr><td style="padding-bottom:28px;">
-          <p style="margin:0;font-size:16px;line-height:1.7;color:#8aa4c2;">Click below to sign in to your RGV AI Coalition member portal. This link expires in 1 hour.</p>
+          <p style="margin:0;font-size:16px;line-height:1.7;color:#8aa4c2;">Click below to sign in to your RGV AI Coalition member portal. This link expires in 24 hours.</p>
         </td></tr>
         <tr><td style="padding-bottom:28px;" align="center">
           <a href="${actionLink}" style="display:inline-block;background:#00d4ff;color:#050a12;font-weight:700;font-size:15px;padding:14px 32px;border-radius:8px;text-decoration:none;">
