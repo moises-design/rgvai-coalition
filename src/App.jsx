@@ -28,8 +28,7 @@ function HomePage() {
             <span className="hero-accent">Coalition</span>
           </h1>
           <p className="hero-subtitle">
-            Join the Rio Grande Valley's AI community for our first gathering —
-            builders, learners, and curious minds welcome.
+            Join the Rio Grande Valley's AI community for our first gathering builders, learners, and curious minds welcome.
           </p>
 
           <div className="event-details">
@@ -44,7 +43,7 @@ function HomePage() {
               <span className="event-detail-icon" aria-hidden="true">◈</span>
               <div>
                 <span className="event-detail-label">Where</span>
-                <span className="event-detail-value">McAllen, TX · Location TBD</span>
+                <span className="event-detail-value">Location TBD</span>
               </div>
             </div>
           </div>
