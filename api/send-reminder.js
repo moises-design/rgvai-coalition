@@ -58,7 +58,7 @@ function buildEmailHtml(name) {
                 <tr>
                   <td>
                     <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#4a6380;">Where</p>
-                    <p style="margin:4px 0 0;font-size:16px;color:#f0f6ff;">McAllen, TX &nbsp;·&nbsp; Location announced soon</p>
+                    <p style="margin:4px 0 0;font-size:16px;color:#f0f6ff;">Edinburg, TX &nbsp;·&nbsp; Location announced soon</p>
                   </td>
                 </tr>
               </table>
@@ -74,7 +74,7 @@ function buildEmailHtml(name) {
           <tr>
             <td style="border-top:1px solid #1a3050;padding-top:24px;">
               <p style="margin:0;font-size:13px;color:#4a6380;">
-                © 2026 RGV AI Coalition · McAllen, TX<br/>
+                © 2026 RGV AI Coalition · Edinburg, TX<br/>
                 You're receiving this because you signed up at rgvaicoalition.com.
               </p>
             </td>

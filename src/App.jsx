@@ -55,7 +55,7 @@ function HomePage() {
       </main>
 
       <footer className="site-footer">
-        <p>© 2026 RGV AI Coalition · McAllen, TX</p>
+        <p>© 2026 RGV AI Coalition · Edinburg, TX</p>
       </footer>
     </div>
   )

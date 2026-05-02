@@ -204,7 +204,7 @@ function MeetingTab({ token }) {
             <label className="field-label" htmlFor="m-location">Location</label>
             <input id="m-location" className="field-input" value={form.location}
               onChange={e => setForm(p => ({ ...p, location: e.target.value }))}
-              placeholder="123 Main St, McAllen, TX" />
+              placeholder="123 Main St, Edinburg, TX" />
           </div>
           <div className="field-group">
             <label className="field-label" htmlFor="m-notes">
@@ -363,7 +363,7 @@ export default function AdminDashboard({ token }) {
       </main>
 
       <footer className="site-footer">
-        <p>© 2026 RGV AI Coalition · McAllen, TX</p>
+        <p>© 2026 RGV AI Coalition · Edinburg, TX</p>
       </footer>
     </div>
   )
