@@ -1,16 +1,16 @@
 import { useState } from 'react'
-import { supabase } from '../supabase'
 
 export default function SuccessScreen({ name, email }) {
   const [resendState, setResendState] = useState('idle') // 'idle' | 'sending' | 'sent' | 'error'
 
   async function handleResend() {
     setResendState('sending')
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: `${window.location.origin}/member` },
+    const res = await fetch('/api/send-magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
     })
-    setResendState(error ? 'error' : 'sent')
+    setResendState(res.ok ? 'sent' : 'error')
   }
 
   return (

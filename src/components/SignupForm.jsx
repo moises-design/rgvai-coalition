@@ -61,10 +61,10 @@ export default function SignupForm({ onSuccess }) {
       }
       return
     }
-    // Send magic link so they can access the member portal
-    await supabase.auth.signInWithOtp({
-      email: form.email.trim().toLowerCase(),
-      options: { emailRedirectTo: `${window.location.origin}/member` },
+    await fetch('/api/send-magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: form.email.trim().toLowerCase() }),
     })
     onSuccess({ name: form.name, email: form.email })
   }

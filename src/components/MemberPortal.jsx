@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 function MemberLogin({ notice }) {
@@ -12,16 +13,14 @@ function MemberLogin({ notice }) {
     if (!email.trim()) { setError('Email is required'); return }
     setLoading(true)
     setError('')
-    const { error: authError } = await supabase.auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
-      options: {
-        emailRedirectTo: `${window.location.origin}/member`,
-        shouldCreateUser: false,
-      },
+    const res = await fetch('/api/send-magic-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.trim().toLowerCase(), checkRsvp: true }),
     })
     setLoading(false)
-    if (authError) {
-      setError('No RSVP found for that email. Please sign up first.')
+    if (!res.ok) {
+      setError('no-rsvp')
       return
     }
     setSent(true)
@@ -31,7 +30,7 @@ function MemberLogin({ notice }) {
     return (
       <div className="page">
         <header className="site-header">
-          <span className="logo-badge">RGV AI</span>
+          <Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link>
         </header>
         <main className="success-container">
           <div className="success-card">
@@ -51,7 +50,7 @@ function MemberLogin({ notice }) {
   return (
     <div className="page">
       <header className="site-header">
-        <span className="logo-badge">RGV AI</span>
+        <Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link>
       </header>
       <main className="success-container">
         <div className="admin-login-card">
@@ -72,11 +71,17 @@ function MemberLogin({ notice }) {
                 className={`field-input${error ? ' field-error' : ''}`}
                 placeholder="jane@example.com"
                 value={email}
-                onChange={e => { setEmail(e.target.value); setError('') }}
+                onChange={e => { setEmail(e.target.value); if (error) setError('') }}
                 autoComplete="email"
                 autoFocus
               />
-              {error && <span className="error-msg">{error}</span>}
+              {error && (
+                <span className="error-msg">
+                  {error === 'no-rsvp' ? (
+                    <>No RSVP found for that email. <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Sign up first →</Link></>
+                  ) : error}
+                </span>
+              )}
             </div>
             <button type="submit" className="submit-btn" disabled={loading}>
               {loading ? (
@@ -123,7 +128,7 @@ function MemberContent({ session }) {
   if (loading) {
     return (
       <div className="page">
-        <header className="site-header"><span className="logo-badge">RGV AI</span></header>
+        <header className="site-header"><Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link></header>
         <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ color: 'var(--text-muted)' }}>Loading…</span>
         </main>
@@ -134,7 +139,7 @@ function MemberContent({ session }) {
   return (
     <div className="page">
       <header className="site-header" style={{ justifyContent: 'space-between' }}>
-        <span className="logo-badge">RGV AI</span>
+        <Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link>
         <button className="admin-btn" onClick={handleSignOut} style={{ fontSize: '0.78rem' }}>
           Sign out
         </button>

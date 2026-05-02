@@ -11,7 +11,7 @@ function unauthorized(res) {
 
 export default async function handler(req, res) {
   const token = req.headers['x-admin-token']
-  if (!token || token !== process.env.ADMIN_PASSWORD) return unauthorized(res)
+  if (!token || (token !== process.env.ADMIN_PASSWORD && token !== process.env.SUPER_ADMIN_PASSWORD)) return unauthorized(res)
 
   if (req.method === 'POST') {
     const { title, body } = req.body

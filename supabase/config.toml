@@ -1,0 +1,23 @@
+# Supabase project config — managed via CLI
+# Run: supabase config push --project-ref fbvcfmuvktwtltdzsubb
+
+[auth]
+site_url = "https://rgvaicoalition.com"
+additional_redirect_urls = [
+  "https://rgvaicoalition.com/member",
+  "https://rgvai-coalition.vercel.app/member",
+  "http://localhost:5173/member",
+  "http://localhost:5199/member"
+]
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+max_frequency = "1m0s"
+otp_length = 8
+otp_expiry = 3600
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true

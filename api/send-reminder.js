@@ -5,12 +5,15 @@ const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
-
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+function isAuthorized(req) {
+  const token = req.headers['x-admin-token']
+  return token === process.env.ADMIN_PASSWORD || token === process.env.SUPER_ADMIN_PASSWORD
+}
+
 // ─── Edit this template for each event ───────────────────────────────────────
-// Update to your verified domain once set up in Resend → Domains
-const EMAIL_FROM    = 'RGV AI Coalition <onboarding@resend.dev>'
+const EMAIL_FROM    = 'RGV AI Coalition <hello@rgvaicoalition.com>'
 const EMAIL_SUBJECT = "We'll see you Wednesday — RGV AI Coalition"
 
 function buildEmailHtml(name) {
@@ -28,7 +31,7 @@ function buildEmailHtml(name) {
         <table width="560" cellpadding="0" cellspacing="0" style="background:#0c1524;border:1px solid #1a3050;border-radius:12px;padding:40px 36px;max-width:560px;width:100%;">
           <tr>
             <td style="padding-bottom:24px;">
-              <span style="font-family:Arial,sans-serif;font-weight:900;font-size:13px;letter-spacing:0.12em;color:#00d4ff;text-transform:uppercase;border:1px solid rgba(0,212,255,0.35);padding:5px 12px;border-radius:6px;">RGV AI</span>
+              <span style="font-weight:900;font-size:13px;letter-spacing:0.12em;color:#00d4ff;text-transform:uppercase;border:1px solid rgba(0,212,255,0.35);padding:5px 12px;border-radius:6px;">RGV AI</span>
             </td>
           </tr>
           <tr>
@@ -84,42 +87,29 @@ function buildEmailHtml(name) {
     </tr>
   </table>
 </body>
-</html>
-  `.trim()
+</html>`.trim()
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+  if (!isAuthorized(req)) return res.status(401).json({ error: 'Unauthorized' })
 
-  const token = req.headers['x-admin-token']
-  if (!token || token !== process.env.ADMIN_PASSWORD) {
-    return res.status(401).json({ error: 'Unauthorized' })
-  }
+  const { targetRole } = req.body || {}
 
-  const { data: rsvps, error: fetchError } = await supabase
-    .from('rsvps')
-    .select('name, email')
+  let query = supabase.from('rsvps').select('name, email, role')
+  if (targetRole && targetRole !== 'all') query = query.eq('role', targetRole)
 
-  if (fetchError) {
-    return res.status(500).json({ error: fetchError.message })
-  }
+  const { data: rsvps, error: fetchError } = await query
+  if (fetchError) return res.status(500).json({ error: fetchError.message })
 
   const results = await Promise.allSettled(
     rsvps.map(({ name, email }) =>
-      resend.emails.send({
-        from: EMAIL_FROM,
-        to: email,
-        subject: EMAIL_SUBJECT,
-        html: buildEmailHtml(name),
-      })
+      resend.emails.send({ from: EMAIL_FROM, to: email, subject: EMAIL_SUBJECT, html: buildEmailHtml(name) })
     )
   )
 
   const sent = results.filter(r => r.status === 'fulfilled').length
   const failed = results.filter(r => r.status === 'rejected').length
-
   return res.status(200).json({ sent, failed, total: rsvps.length })
 }

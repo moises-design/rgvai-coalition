@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import SignupForm from './components/SignupForm'
 import SuccessScreen from './components/SuccessScreen'
 import AdminLogin from './components/AdminLogin'
 import AdminDashboard from './components/AdminDashboard'
 import MemberPortal from './components/MemberPortal'
+import SuperAdminLogin from './components/SuperAdminLogin'
+import SuperAdminDashboard from './components/SuperAdminDashboard'
 import './App.css'
 
 function HomePage() {
@@ -16,8 +18,11 @@ function HomePage() {
 
   return (
     <div className="page">
-      <header className="site-header">
+      <header className="site-header" style={{ justifyContent: 'space-between' }}>
         <span className="logo-badge">RGV AI</span>
+        <Link to="/member" className="admin-btn" style={{ fontSize: '0.78rem', textDecoration: 'none' }}>
+          Member login
+        </Link>
       </header>
 
       <main className="main-content">
@@ -69,12 +74,21 @@ function AdminRoute() {
   return <AdminDashboard token={token} />
 }
 
+function SuperAdminRoute() {
+  const stored = sessionStorage.getItem('superadmin_token')
+  const [token, setToken] = useState(stored || '')
+
+  if (!token) return <SuperAdminLogin onLogin={setToken} />
+  return <SuperAdminDashboard token={token} />
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/admin" element={<AdminRoute />} />
+        <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />
       </Routes>
     </BrowserRouter>
