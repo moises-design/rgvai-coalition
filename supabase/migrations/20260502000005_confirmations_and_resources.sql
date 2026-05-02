@@ -4,7 +4,7 @@
 -- access (anon or authenticated roles) is blocked at the database level.
 CREATE TABLE IF NOT EXISTS meeting_confirmations (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  rsvp_id BIGINT NOT NULL REFERENCES rsvps(id) ON DELETE CASCADE,
+  rsvp_id UUID NOT NULL REFERENCES rsvps(id) ON DELETE CASCADE,
   meeting_id INT NOT NULL DEFAULT 1,
   confirmed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE(rsvp_id, meeting_id)
