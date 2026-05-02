@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+import ConfirmModal from './ConfirmModal'
 
 const RSVP_COLUMNS = [
   { key: 'name',         label: 'Name' },
@@ -42,6 +43,7 @@ function RsvpTab({ token }) {
   const [sortAsc, setSortAsc] = useState(false)
   const [sending, setSending] = useState(false)
   const [sendResult, setSendResult] = useState(null)
+  const [modalOpen, setModalOpen] = useState(false)
 
   useEffect(() => {
     let active = true
@@ -64,14 +66,14 @@ function RsvpTab({ token }) {
     return sortAsc ? diff : -diff
   })
 
-  async function handleSendReminder() {
-    if (!window.confirm(`Send reminder email to all ${rsvps.length} RSVPs?`)) return
+  async function handleConfirmSend() {
     setSending(true)
     setSendResult(null)
     const res = await fetch('/api/send-reminder', { method: 'POST', headers: { 'x-admin-token': token } })
     const data = await res.json()
     setSendResult(data)
     setSending(false)
+    setModalOpen(false)
   }
 
   return (
@@ -95,13 +97,21 @@ function RsvpTab({ token }) {
           <button
             className="submit-btn"
             style={{ padding: '9px 20px', fontSize: '0.9rem', width: 'auto' }}
-            onClick={handleSendReminder}
+            onClick={() => setModalOpen(true)}
             disabled={sending || loading || rsvps.length === 0}
           >
-            {sending ? 'Sending…' : 'Send Reminder'}
+            Send Reminder
           </button>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={modalOpen}
+        count={rsvps.length}
+        onConfirm={handleConfirmSend}
+        onCancel={() => setModalOpen(false)}
+        sending={sending}
+      />
 
       {sendResult && (
         <div className={sendResult.failed > 0 ? 'server-error' : 'send-success'} role="status" style={{ marginBottom: '16px' }}>
@@ -251,7 +261,7 @@ function AnnouncementsTab({ token }) {
   }
 
   async function handleDelete(id) {
-    if (!window.confirm('Delete this announcement?')) return
+    if (!window.confirm('Delete this announcement? This cannot be undone.')) return
     await fetch(`/api/announcements?id=${id}`, {
       method: 'DELETE',
       headers: { 'x-admin-token': token },

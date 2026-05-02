@@ -9,7 +9,8 @@ const supabase = createClient(
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 // ─── Edit this template for each event ───────────────────────────────────────
-const EMAIL_FROM    = 'RGV AI Coalition <hello@rgvaicoalition.com>'
+// Update to your verified domain once set up in Resend → Domains
+const EMAIL_FROM    = 'RGV AI Coalition <onboarding@resend.dev>'
 const EMAIL_SUBJECT = "We'll see you Wednesday — RGV AI Coalition"
 
 function buildEmailHtml(name) {
