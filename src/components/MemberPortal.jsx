@@ -147,7 +147,7 @@ function MemberContent({ session }) {
       setLoading(false)
     }
     loadData()
-  }, [session.user.email])
+  }, [session.user.email, session.access_token])
 
   async function handleConfirm() {
     setConfirming(true)

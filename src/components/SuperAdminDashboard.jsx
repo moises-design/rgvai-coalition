@@ -55,17 +55,17 @@ function MembersTab({ token }) {
   const [removeTarget, setRemoveTarget] = useState(null)
   const [removing, setRemoving] = useState(false)
 
-  async function load() {
-    setLoading(true)
-    const { data } = await supabase
-      .from('rsvps')
-      .select('id, name, email, phone, role, created_at')
+  useEffect(() => {
+    let active = true
+    supabase.from('rsvps').select('id, name, email, phone, role, created_at')
       .order('created_at', { ascending: false })
-    setMembers(data || [])
-    setLoading(false)
-  }
-
-  useEffect(() => { load() }, [])
+      .then(({ data }) => {
+        if (!active) return
+        setMembers(data || [])
+        setLoading(false)
+      })
+    return () => { active = false }
+  }, [])
 
   async function handleRoleChange(email, role) {
     setRoleChanging(p => ({ ...p, [email]: true }))
@@ -232,10 +232,11 @@ function AnalyticsTab() {
   const tools = Object.entries(toolCounts).sort((a, b) => b[1] - a[1])
   const maxToolCount = Math.max(...tools.map(t => t[1]), 1)
 
-  const last30 = members.filter(m => new Date(m.created_at) > new Date(Date.now() - 30 * 86400000)).length
+  const nowMs = now.getTime()
+  const last30 = members.filter(m => new Date(m.created_at) > new Date(nowMs - 30 * 86400000)).length
   const prev30 = members.filter(m => {
     const d = new Date(m.created_at)
-    return d > new Date(Date.now() - 60 * 86400000) && d <= new Date(Date.now() - 30 * 86400000)
+    return d > new Date(nowMs - 60 * 86400000) && d <= new Date(nowMs - 30 * 86400000)
   }).length
   const growthRate = prev30 === 0 ? null : Math.round(((last30 - prev30) / prev30) * 100)
 
@@ -647,7 +648,16 @@ function ResourcesTab({ token }) {
     setLoading(false)
   }
 
-  useEffect(() => { loadResources() }, [])
+  useEffect(() => {
+    let active = true
+    supabase.from('resources').select('*').order('created_at', { ascending: false })
+      .then(({ data }) => {
+        if (!active) return
+        setResources(data || [])
+        setLoading(false)
+      })
+    return () => { active = false }
+  }, [])
 
   async function handleAdd(e) {
     e.preventDefault()
