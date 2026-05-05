@@ -71,6 +71,14 @@ export default function SignupForm({ onSuccess }) {
 
   return (
     <div className="form-card">
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+        <img
+          src="/rgvai-logo.png"
+          alt="RGV AI Coalition"
+          style={{ width: '160px', height: '160px', borderRadius: '50%', objectFit: 'cover', display: 'block' }}
+        />
+      </div>
+
       <div className="form-header">
         <h2 className="form-title">Reserve your spot</h2>
         <p className="form-subtitle">Free to attend — just let us know you're coming.</p>
