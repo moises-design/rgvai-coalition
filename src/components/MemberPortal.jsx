@@ -53,7 +53,9 @@ function MemberLogin({ notice }) {
         </header>
         <main className="success-container">
           <div className="success-card">
-            <div className="success-icon" aria-hidden="true">✦</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+              <img src="/rgvai-logo.png" alt="RGV AI Coalition" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+            </div>
             <h1 className="success-title">Check your email</h1>
             <p className="success-body">
               We sent a login link to <strong>{email}</strong>.
@@ -73,6 +75,9 @@ function MemberLogin({ notice }) {
       </header>
       <main className="success-container">
         <div className="admin-login-card">
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <img src="/rgvai-logo.png" alt="RGV AI Coalition" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+          </div>
           <div className="event-badge" style={{ marginBottom: '20px' }}>Member Portal</div>
           <h1 className="form-title" style={{ marginBottom: '6px' }}>Sign in</h1>
           <p className="form-subtitle" style={{ marginBottom: notice ? '16px' : '24px' }}>

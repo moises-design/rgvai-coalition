@@ -20,7 +20,9 @@ export default function SuccessScreen({ name, email }) {
       </header>
       <main className="success-container">
         <div className="success-card">
-          <div className="success-icon" aria-hidden="true">✦</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <img src="/rgvai-logo.png" alt="RGV AI Coalition" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+          </div>
           <h1 className="success-title">You're on the list!</h1>
           <p className="success-body">
             We'll see you <strong>Wednesday, May 20, 2026 at 7:00 PM</strong> in Edinburg, TX.
