@@ -41,14 +41,26 @@ function HomePage() {
               <span className="event-detail-icon" aria-hidden="true">◈</span>
               <div>
                 <span className="event-detail-label">When</span>
-                <span className="event-detail-value">Wednesday, May 20, 2026 · 7:00 PM</span>
+                <span className="event-detail-value">Wednesday, May 20, 2026 · 7:00 PM – 8:30 PM</span>
               </div>
             </div>
             <div className="event-detail-item">
               <span className="event-detail-icon" aria-hidden="true">◈</span>
               <div>
                 <span className="event-detail-label">Where</span>
-                <span className="event-detail-value">Location TBD</span>
+                <div>
+                  <span className="event-detail-value">The Dog Stadium</span>
+                  <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                    1402 N Closner Blvd, Ste A, Edinburg, TX 78541
+                  </span>
+                  <a
+                    href="https://maps.google.com/?q=1402+N+Closner+Blvd+Edinburg+TX+78541"
+                    target="_blank" rel="noopener noreferrer"
+                    style={{ fontSize: '0.8rem', color: 'var(--cyan)', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}
+                  >
+                    Open in Maps →
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -56,6 +68,22 @@ function HomePage() {
 
         <section className="form-section">
           <SignupForm onSuccess={setRegistrant} />
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <img
+              src="/flyer.jpg"
+              alt="RGV AI Coalition Event Flyer"
+              style={{
+                width: '100%',
+                maxWidth: '500px',
+                borderRadius: '12px',
+                display: 'block',
+                margin: '0 auto',
+              }}
+            />
+            <p style={{ marginTop: '12px', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
+              Share with someone who should be here
+            </p>
+          </div>
         </section>
       </main>
 

@@ -25,8 +25,8 @@ export default function SuccessScreen({ name, email }) {
           </div>
           <h1 className="success-title">You're on the list!</h1>
           <p className="success-body">
-            We'll see you <strong>Wednesday, May 20, 2026 at 7:00 PM</strong> in Edinburg, TX.
-            We'll send location details as the date gets closer.
+            We'll see you <strong>Wednesday, May 20, 2026 at 7:00 PM – 8:30 PM</strong> at{' '}
+            <strong>The Dog Stadium</strong>, 1402 N Closner Blvd, Ste A, Edinburg, TX 78541.
           </p>
           <div className="success-detail">
             <span className="detail-label">Registered as</span>

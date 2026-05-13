@@ -169,7 +169,7 @@ export default function SignupForm({ onSuccess }) {
               <span className="spinner" aria-hidden="true" />
               Saving…
             </span>
-          ) : 'Count me in →'}
+          ) : 'Reserve My Spot — May 20'}
         </button>
 
         <p className="form-privacy">No spam, ever. Just event updates.</p>
