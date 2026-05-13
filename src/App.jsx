@@ -70,7 +70,7 @@ function HomePage() {
           <SignupForm onSuccess={setRegistrant} />
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
             <img
-              src="/flyer.jpg"
+              src="/flyer.png"
               alt="RGV AI Coalition Event Flyer"
               style={{
                 width: '100%',
