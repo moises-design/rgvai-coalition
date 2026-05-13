@@ -29,7 +29,7 @@
 }
 
 .logo-badge {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 800;
   font-size: 1rem;
   letter-spacing: 0.12em;
@@ -66,9 +66,9 @@
 
 .event-badge {
   display: inline-block;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--cyan);
@@ -80,11 +80,11 @@
 }
 
 .hero-title {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: clamp(2.8rem, 5vw, 4rem);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-family: 'Bebas Neue', sans-serif;
+  font-weight: 400;
+  font-size: clamp(3rem, 5.5vw, 4.4rem);
+  line-height: 1.0;
+  letter-spacing: 0.03em;
   color: var(--text-primary);
   margin-bottom: 20px;
 }
@@ -122,8 +122,9 @@
 
 .event-detail-label {
   display: block;
-  font-size: 0.72rem;
-  font-weight: 500;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -159,7 +160,7 @@
 }
 
 .form-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: 1.4rem;
   color: var(--text-primary);
@@ -285,7 +286,7 @@
   padding: 14px 24px;
   background: var(--cyan);
   color: #050a12;
-  font-family: 'Syne', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: 1rem;
   letter-spacing: 0.02em;
@@ -374,7 +375,7 @@
 }
 
 .success-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 800;
   font-size: 2rem;
   color: var(--text-primary);
@@ -503,7 +504,7 @@
 }
 
 .modal-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: 1.2rem;
   color: var(--text-primary);
@@ -763,7 +764,7 @@
 }
 
 .member-card-title {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 700;
   font-size: 0.85rem;
   letter-spacing: 0.1em;
