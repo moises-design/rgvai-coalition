@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import SignupForm from './components/SignupForm'
 import SuccessScreen from './components/SuccessScreen'
 import AdminLogin from './components/AdminLogin'
@@ -7,10 +7,22 @@ import AdminDashboard from './components/AdminDashboard'
 import MemberPortal from './components/MemberPortal'
 import SuperAdminLogin from './components/SuperAdminLogin'
 import SuperAdminDashboard from './components/SuperAdminDashboard'
+import DigitalLiteracyPage from './components/DigitalLiteracyPage'
+import SiteHeader from './components/SiteHeader'
+import SiteFooter from './components/SiteFooter'
+import usePageMeta from './hooks/usePageMeta'
 import './App.css'
 
 function HomePage() {
   const [registrant, setRegistrant] = useState(null)
+
+  usePageMeta({
+    title: 'RGV AI Coalition — Save the Date · May 20, 2026',
+    description: 'Save the date — RGV AI Coalition first gathering, Wednesday May 20, 2026 at 7:00 PM in Edinburg, TX.',
+    ogTitle: 'RGV AI Coalition — Connect. Collaborate. Innovate.',
+    ogDescription: "Join the Rio Grande Valley's AI community. Wednesday May 20, 2026 · 7:00 PM · Edinburg, TX",
+    path: '/',
+  })
 
   if (registrant) {
     return <SuccessScreen name={registrant.name} email={registrant.email} />
@@ -18,12 +30,7 @@ function HomePage() {
 
   return (
     <div className="page">
-      <header className="site-header" style={{ justifyContent: 'space-between' }}>
-        <span className="logo-badge">RGV AI</span>
-        <Link to="/member" className="admin-btn" style={{ fontSize: '0.78rem', textDecoration: 'none' }}>
-          Member login
-        </Link>
-      </header>
+      <SiteHeader />
 
       <main className="main-content">
         <section className="hero-section">
@@ -87,9 +94,7 @@ function HomePage() {
         </section>
       </main>
 
-      <footer className="site-footer">
-        <p>© 2026 RGV AI Coalition · Edinburg, TX</p>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
@@ -115,6 +120,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/digital-literacy" element={<DigitalLiteracyPage />} />
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />
