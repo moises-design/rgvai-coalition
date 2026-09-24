@@ -1,0 +1,246 @@
+export const DIFFICULTY_LABELS = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+}
+
+export const courses = [
+  {
+    slug: 'ai-for-beginners',
+    title: 'AI for Beginners',
+    summary: 'Understand what AI is, how it works, and how to start using it safely in everyday life.',
+    difficulty: 'beginner',
+    durationMinutes: 90,
+    category: 'foundations',
+    audiences: ['community', 'students'],
+    lessonCount: 5,
+    objectives: [
+      'Define artificial intelligence in plain language',
+      'Identify common AI tools used at home, school, and work',
+      'Recognize when AI is helpful and when human judgment is required',
+      'Practice writing clear prompts for everyday tasks',
+    ],
+    prerequisites: ['Basic comfort using a web browser and email'],
+    lessons: [
+      { slug: 'what-is-ai', title: 'What Is AI?', durationMinutes: 15 },
+      { slug: 'how-ai-works', title: 'How AI Works — Without the Jargon', durationMinutes: 20 },
+      { slug: 'everyday-ai-tools', title: 'AI Tools You May Already Use', durationMinutes: 15 },
+      { slug: 'first-prompts', title: 'Your First Prompts', durationMinutes: 25 },
+      { slug: 'staying-safe', title: 'Staying Safe and Asking Good Questions', durationMinutes: 15 },
+    ],
+    externalLinks: [
+      { title: 'AI for Beginners — Microsoft Learn', url: 'https://learn.microsoft.com/en-us/training/paths/ai-for-beginners/', provider: 'Microsoft Learn' },
+      { title: 'Introduction to Artificial Intelligence — IBM SkillsBuild', url: 'https://skillsbuild.org/', provider: 'IBM SkillsBuild' },
+    ],
+    recommendedNext: ['responsible-ai-use', 'prompt-engineering-everyday-work'],
+  },
+  {
+    slug: 'ai-for-small-business',
+    title: 'AI for Small Businesses',
+    summary: 'Practical AI workflows for marketing, customer service, and operations — built for owners without a tech team.',
+    difficulty: 'intermediate',
+    durationMinutes: 120,
+    category: 'workforce',
+    audiences: ['small-business'],
+    lessonCount: 6,
+    objectives: [
+      'Map AI opportunities across sales, marketing, and operations',
+      'Draft customer communications with AI assistance',
+      'Automate repetitive admin tasks responsibly',
+      'Evaluate AI tools on cost, privacy, and fit',
+    ],
+    prerequisites: ['AI for Beginners or equivalent comfort with digital tools'],
+    lessons: [
+      { slug: 'ai-for-operations', title: 'Where AI Saves Time in a Small Business', durationMinutes: 20 },
+      { slug: 'marketing-assist', title: 'Marketing and Social Content', durationMinutes: 25 },
+      { slug: 'customer-service', title: 'Customer Messages and Follow-Up', durationMinutes: 20 },
+      { slug: 'documents-and-proposals', title: 'Documents, Proposals, and Reports', durationMinutes: 20 },
+      { slug: 'tool-selection', title: 'Choosing Tools on a Real Budget', durationMinutes: 20 },
+      { slug: 'implementation-plan', title: 'Your 30-Day Implementation Plan', durationMinutes: 15 },
+    ],
+    externalLinks: [
+      { title: 'Google Cloud Skills Boost', url: 'https://www.cloudskillsboost.google/', provider: 'Google Cloud' },
+    ],
+    recommendedNext: ['prompt-engineering-everyday-work', 'digital-safety-basics'],
+  },
+  {
+    slug: 'ai-for-nonprofits',
+    title: 'AI for Nonprofits',
+    summary: 'Stretch limited staff capacity with AI for outreach, grant support, volunteer coordination, and reporting.',
+    difficulty: 'intermediate',
+    durationMinutes: 100,
+    category: 'workforce',
+    audiences: ['nonprofits'],
+    lessonCount: 5,
+    objectives: [
+      'Use AI to draft outreach and program communications',
+      'Organize volunteer and donor information more efficiently',
+      'Support grant research and reporting workflows',
+      'Protect beneficiary privacy when using AI tools',
+    ],
+    prerequisites: ['Comfort with email, documents, and basic spreadsheets'],
+    lessons: [
+      { slug: 'nonprofit-use-cases', title: 'High-Impact Use Cases for Nonprofits', durationMinutes: 20 },
+      { slug: 'outreach-and-storytelling', title: 'Outreach and Storytelling', durationMinutes: 20 },
+      { slug: 'grants-and-reporting', title: 'Grants and Program Reporting', durationMinutes: 25 },
+      { slug: 'volunteer-coordination', title: 'Volunteer Coordination', durationMinutes: 20 },
+      { slug: 'privacy-for-nonprofits', title: 'Privacy and Trust for Beneficiaries', durationMinutes: 15 },
+    ],
+    externalLinks: [
+      { title: 'IBM SkillsBuild — Nonprofit resources', url: 'https://skillsbuild.org/', provider: 'IBM SkillsBuild' },
+    ],
+    recommendedNext: ['responsible-ai-use', 'digital-safety-basics'],
+  },
+  {
+    slug: 'digital-safety-basics',
+    title: 'Digital Safety & Cybersecurity Basics',
+    summary: 'Protect passwords, spot scams, avoid phishing, and build safer digital habits for individuals and organizations.',
+    difficulty: 'beginner',
+    durationMinutes: 75,
+    category: 'safety',
+    audiences: ['community', 'government', 'educators'],
+    lessonCount: 4,
+    objectives: [
+      'Create and manage strong passwords and multi-factor authentication',
+      'Recognize phishing and social engineering attempts',
+      'Understand safe sharing practices for personal and work data',
+      'Build a basic security checklist for your organization',
+    ],
+    prerequisites: ['None'],
+    lessons: [
+      { slug: 'passwords-and-mfa', title: 'Passwords and Multi-Factor Authentication', durationMinutes: 20 },
+      { slug: 'phishing-scams', title: 'Phishing, Scams, and Social Engineering', durationMinutes: 20 },
+      { slug: 'safe-sharing', title: 'Safe Sharing and Device Habits', durationMinutes: 20 },
+      { slug: 'org-security-basics', title: 'Security Basics for Teams', durationMinutes: 15 },
+    ],
+    externalLinks: [
+      { title: 'Digital.gov — Security resources', url: 'https://digital.gov/', provider: 'Digital.gov' },
+    ],
+    recommendedNext: ['responsible-ai-use', 'ai-for-beginners'],
+  },
+  {
+    slug: 'responsible-ai-use',
+    title: 'Responsible AI Use',
+    summary: 'Understand bias, privacy, accuracy, and ethical decision-making when using AI at work or in the community.',
+    difficulty: 'intermediate',
+    durationMinutes: 80,
+    category: 'ethics',
+    audiences: ['community', 'government', 'educators', 'nonprofits'],
+    lessonCount: 5,
+    objectives: [
+      'Explain how bias can appear in AI outputs',
+      'Apply a simple framework for responsible AI decisions',
+      'Verify AI-generated information before acting on it',
+      'Communicate AI use transparently to stakeholders',
+    ],
+    prerequisites: ['AI for Beginners'],
+    lessons: [
+      { slug: 'bias-and-fairness', title: 'Bias, Fairness, and Representation', durationMinutes: 20 },
+      { slug: 'privacy-and-data', title: 'Privacy and Data You Should Not Share', durationMinutes: 15 },
+      { slug: 'accuracy-checking', title: 'Checking Accuracy and Hallucinations', durationMinutes: 20 },
+      { slug: 'transparency', title: 'Transparency with Colleagues and the Public', durationMinutes: 15 },
+      { slug: 'responsible-framework', title: 'A Practical Responsible AI Framework', durationMinutes: 10 },
+    ],
+    externalLinks: [
+      { title: 'NVIDIA Deep Learning Institute', url: 'https://www.nvidia.com/en-us/training/', provider: 'NVIDIA DLI' },
+    ],
+    recommendedNext: ['prompt-engineering-everyday-work', 'ai-tools-educators'],
+  },
+  {
+    slug: 'prompt-engineering-everyday-work',
+    title: 'Prompt Engineering for Everyday Work',
+    summary: 'Learn how to ask better questions, get useful outputs, and apply AI to real tasks with confidence.',
+    difficulty: 'intermediate',
+    durationMinutes: 90,
+    category: 'skills',
+    audiences: ['small-business', 'community', 'government'],
+    lessonCount: 5,
+    objectives: [
+      'Structure prompts with context, task, and constraints',
+      'Iterate on outputs to improve quality',
+      'Use templates for recurring work tasks',
+      'Avoid common prompt mistakes that waste time',
+    ],
+    prerequisites: ['AI for Beginners'],
+    lessons: [
+      { slug: 'prompt-anatomy', title: 'Anatomy of a Strong Prompt', durationMinutes: 20 },
+      { slug: 'iteration', title: 'Iterating and Refining Outputs', durationMinutes: 20 },
+      { slug: 'templates', title: 'Templates for Recurring Tasks', durationMinutes: 20 },
+      { slug: 'role-and-tone', title: 'Role, Tone, and Audience', durationMinutes: 15 },
+      { slug: 'workflows', title: 'Building Simple AI Workflows', durationMinutes: 15 },
+    ],
+    externalLinks: [
+      { title: 'Microsoft Learn — Prompt engineering', url: 'https://learn.microsoft.com/', provider: 'Microsoft Learn' },
+    ],
+    recommendedNext: ['ai-for-small-business', 'workforce-readiness-ai'],
+  },
+  {
+    slug: 'ai-tools-educators',
+    title: 'AI Tools for Students and Educators',
+    summary: 'Bring AI literacy into classrooms and professional development with responsible, age-appropriate guidance.',
+    difficulty: 'intermediate',
+    durationMinutes: 100,
+    category: 'education',
+    audiences: ['educators'],
+    lessonCount: 5,
+    objectives: [
+      'Design classroom policies for responsible AI use',
+      'Use AI for lesson planning and differentiation support',
+      'Teach students to evaluate AI outputs critically',
+      'Protect student privacy in educational settings',
+    ],
+    prerequisites: ['Responsible AI Use recommended'],
+    lessons: [
+      { slug: 'classroom-policy', title: 'Classroom AI Policies That Work', durationMinutes: 20 },
+      { slug: 'lesson-planning', title: 'Lesson Planning and Differentiation', durationMinutes: 25 },
+      { slug: 'student-critical-thinking', title: 'Teaching Critical Evaluation', durationMinutes: 20 },
+      { slug: 'academic-integrity', title: 'Academic Integrity and Attribution', durationMinutes: 20 },
+      { slug: 'ferpa-privacy', title: 'Student Privacy and FERPA Awareness', durationMinutes: 15 },
+    ],
+    externalLinks: [
+      { title: 'Khan Academy — AI education resources', url: 'https://www.khanacademy.org/', provider: 'Khan Academy' },
+    ],
+    recommendedNext: ['responsible-ai-use', 'digital-safety-basics'],
+  },
+  {
+    slug: 'workforce-readiness-ai',
+    title: 'Workforce Readiness with AI',
+    summary: 'Prepare job seekers and employees for roles that increasingly expect digital and AI fluency.',
+    difficulty: 'intermediate',
+    durationMinutes: 110,
+    category: 'workforce',
+    audiences: ['community', 'government'],
+    lessonCount: 6,
+    objectives: [
+      'Identify AI-related skills employers are seeking in South Texas',
+      'Build a portfolio of AI-assisted work samples',
+      'Prepare for interviews that include AI fluency questions',
+      'Create a personal learning plan for continued growth',
+    ],
+    prerequisites: ['AI for Beginners', 'Prompt Engineering for Everyday Work'],
+    lessons: [
+      { slug: 'labor-market', title: 'AI and the South Texas Labor Market', durationMinutes: 20 },
+      { slug: 'resume-and-portfolio', title: 'Resumes and Portfolios with AI Support', durationMinutes: 20 },
+      { slug: 'interview-prep', title: 'Interview Preparation', durationMinutes: 20 },
+      { slug: 'workplace-scenarios', title: 'Workplace Scenarios and Case Studies', durationMinutes: 25 },
+      { slug: 'continued-learning', title: 'Building a Continued Learning Plan', durationMinutes: 15 },
+      { slug: 'certification-path', title: 'Next Steps Toward Certification', durationMinutes: 10 },
+    ],
+    externalLinks: [
+      { title: 'Per Scholas — Tech workforce training', url: 'https://www.perscholas.org/', provider: 'Per Scholas' },
+      { title: 'IBM SkillsBuild', url: 'https://skillsbuild.org/', provider: 'IBM SkillsBuild' },
+    ],
+    recommendedNext: ['ai-for-small-business', 'prompt-engineering-everyday-work'],
+  },
+]
+
+export function getCourse(slug) {
+  return courses.find((c) => c.slug === slug)
+}
+
+export function formatDuration(minutes) {
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m ? `${h} hr ${m} min` : `${h} hr`
+}
