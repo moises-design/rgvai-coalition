@@ -1,108 +1,69 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import SignupForm from './components/SignupForm'
-import SuccessScreen from './components/SuccessScreen'
-import AdminLogin from './components/AdminLogin'
-import AdminDashboard from './components/AdminDashboard'
-import MemberPortal from './components/MemberPortal'
-import SuperAdminLogin from './components/SuperAdminLogin'
-import SuperAdminDashboard from './components/SuperAdminDashboard'
-import DigitalLiteracyPage from './components/DigitalLiteracyPage'
-import SiteHeader from './components/SiteHeader'
-import SiteFooter from './components/SiteFooter'
+import { lazy, Suspense, useState } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import usePageMeta from './hooks/usePageMeta'
 import './App.css'
+import './platform.css'
 
-function HomePage() {
+const PlatformHome = lazy(() => import('./pages/PlatformHome'))
+const LearnHubPage = lazy(() => import('./pages/LearnPages').then((m) => ({ default: m.LearnHubPage })))
+const CourseCatalogPage = lazy(() => import('./pages/LearnPages').then((m) => ({ default: m.CourseCatalogPage })))
+const CourseDetailPage = lazy(() => import('./pages/LearnPages').then((m) => ({ default: m.CourseDetailPage })))
+const LessonPage = lazy(() => import('./pages/LearnPages').then((m) => ({ default: m.LessonPage })))
+const PathsListPage = lazy(() => import('./pages/LearnPages').then((m) => ({ default: m.PathsListPage })))
+const PathDetailPage = lazy(() => import('./pages/LearnPages').then((m) => ({ default: m.PathDetailPage })))
+const InstructorPage = lazy(() => import('./pages/LearnPages').then((m) => ({ default: m.InstructorPage })))
+const EventsPage = lazy(() => import('./pages/EventsPages').then((m) => ({ default: m.EventsPage })))
+const EventDetailPage = lazy(() => import('./pages/EventsPages').then((m) => ({ default: m.EventDetailPage })))
+const PartnersPage = lazy(() => import('./pages/CommunityPages').then((m) => ({ default: m.PartnersPage })))
+const PartnerDetailPage = lazy(() => import('./pages/CommunityPages').then((m) => ({ default: m.PartnerDetailPage })))
+const GovernmentPage = lazy(() => import('./pages/CommunityPages').then((m) => ({ default: m.GovernmentPage })))
+const SectorPage = lazy(() => import('./pages/CommunityPages').then((m) => ({ default: m.SectorPage })))
+const VolunteerPage = lazy(() => import('./pages/CommunityPages').then((m) => ({ default: m.VolunteerPage })))
+const NewsPage = lazy(() => import('./pages/ResourcesPages').then((m) => ({ default: m.NewsPage })))
+const NewsArticlePage = lazy(() => import('./pages/ResourcesPages').then((m) => ({ default: m.NewsArticlePage })))
+const PromptsPage = lazy(() => import('./pages/ResourcesPages').then((m) => ({ default: m.PromptsPage })))
+const DownloadsPage = lazy(() => import('./pages/ResourcesPages').then((m) => ({ default: m.DownloadsPage })))
+const ToolsPage = lazy(() => import('./pages/ResourcesPages').then((m) => ({ default: m.ToolsPage })))
+const AboutPage = lazy(() => import('./pages/AboutPages').then((m) => ({ default: m.AboutPage })))
+const SponsorsPage = lazy(() => import('./pages/AboutPages').then((m) => ({ default: m.SponsorsPage })))
+const PartnerWithUsPage = lazy(() => import('./pages/AboutPages').then((m) => ({ default: m.PartnerWithUsPage })))
+const ContactPage = lazy(() => import('./pages/AboutPages').then((m) => ({ default: m.ContactPage })))
+const AdminLogin = lazy(() => import('./components/AdminLogin'))
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'))
+const MemberPortal = lazy(() => import('./components/MemberPortal'))
+const SuperAdminLogin = lazy(() => import('./components/SuperAdminLogin'))
+const SuperAdminDashboard = lazy(() => import('./components/SuperAdminDashboard'))
+const SignupForm = lazy(() => import('./components/SignupForm'))
+const SuccessScreen = lazy(() => import('./components/SuccessScreen'))
+
+function PageLoader() {
+  return (
+    <div className="page-loader" role="status" aria-live="polite">
+      <span className="visually-hidden">Loading page</span>
+      <span className="spinner" aria-hidden="true" />
+    </div>
+  )
+}
+
+function LegacyEventHome() {
   const [registrant, setRegistrant] = useState(null)
 
   usePageMeta({
-    title: 'RGV AI Coalition — Save the Date · May 20, 2026',
-    description: 'Save the date — RGV AI Coalition first gathering, Wednesday May 20, 2026 at 7:00 PM in Edinburg, TX.',
-    ogTitle: 'RGV AI Coalition — Connect. Collaborate. Innovate.',
-    ogDescription: "Join the Rio Grande Valley's AI community. Wednesday May 20, 2026 · 7:00 PM · Edinburg, TX",
-    path: '/',
+    title: 'Event Registration — RGV AI Coalition Kickoff',
+    description: 'Register for the RGV AI Coalition community kickoff, May 20, 2026 in Edinburg, TX.',
+    path: '/events/rgv-ai-coalition-kickoff/register',
   })
 
   if (registrant) {
     return <SuccessScreen name={registrant.name} email={registrant.email} />
   }
 
-  return (
-    <div className="page">
-      <SiteHeader />
-
-      <main className="main-content">
-        <section className="hero-section">
-          <div className="event-badge">Save the Date</div>
-          <h1 className="hero-title">
-            RGV AI<br />
-            <span className="hero-accent">Coalition</span>
-          </h1>
-          <p className="hero-subtitle">
-            Join the Rio Grande Valley's AI community for our first gathering builders, learners, and curious minds welcome.
-          </p>
-
-          <div className="event-details">
-            <div className="event-detail-item">
-              <span className="event-detail-icon" aria-hidden="true">◈</span>
-              <div>
-                <span className="event-detail-label">When</span>
-                <span className="event-detail-value">Wednesday, May 20, 2026 · 7:00 PM – 8:30 PM</span>
-              </div>
-            </div>
-            <div className="event-detail-item">
-              <span className="event-detail-icon" aria-hidden="true">◈</span>
-              <div>
-                <span className="event-detail-label">Where</span>
-                <div>
-                  <span className="event-detail-value">The Dog Stadium</span>
-                  <span style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                    1402 N Closner Blvd, Ste A, Edinburg, TX 78541
-                  </span>
-                  <a
-                    href="https://maps.google.com/?q=1402+N+Closner+Blvd+Edinburg+TX+78541"
-                    target="_blank" rel="noopener noreferrer"
-                    style={{ fontSize: '0.8rem', color: 'var(--cyan)', textDecoration: 'none', marginTop: '4px', display: 'inline-block' }}
-                  >
-                    Open in Maps →
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="form-section">
-          <SignupForm onSuccess={setRegistrant} />
-          <div style={{ marginTop: '24px', textAlign: 'center' }}>
-            <img
-              src="/flyer.png"
-              alt="RGV AI Coalition Event Flyer"
-              style={{
-                width: '100%',
-                maxWidth: '500px',
-                borderRadius: '12px',
-                display: 'block',
-                margin: '0 auto',
-              }}
-            />
-            <p style={{ marginTop: '12px', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
-              Share with someone who should be here
-            </p>
-          </div>
-        </section>
-      </main>
-
-      <SiteFooter />
-    </div>
-  )
+  return <SignupForm onSuccess={setRegistrant} />
 }
 
 function AdminRoute() {
   const stored = sessionStorage.getItem('admin_token')
   const [token, setToken] = useState(stored || '')
-
   if (!token) return <AdminLogin onLogin={setToken} />
   return <AdminDashboard token={token} />
 }
@@ -110,21 +71,67 @@ function AdminRoute() {
 function SuperAdminRoute() {
   const stored = sessionStorage.getItem('superadmin_token')
   const [token, setToken] = useState(stored || '')
-
   if (!token) return <SuperAdminLogin onLogin={setToken} />
   return <SuperAdminDashboard token={token} />
 }
 
+function EducatorsPage() {
+  return <SectorPage sectorKey="educators" />
+}
+
+function SmallBusinessPage() {
+  return <SectorPage sectorKey="small-business" />
+}
+
+function NonprofitsPage() {
+  return <SectorPage sectorKey="nonprofits" />
+}
+
 export default function App() {
   return (
-    <BrowserRouter>
+    <Suspense fallback={<PageLoader />}>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/digital-literacy" element={<DigitalLiteracyPage />} />
+        <Route path="/" element={<PlatformHome />} />
+
+        <Route path="/learn" element={<LearnHubPage />} />
+        <Route path="/learn/courses" element={<CourseCatalogPage />} />
+        <Route path="/learn/courses/:slug" element={<CourseDetailPage />} />
+        <Route path="/learn/courses/:slug/lessons/:lessonSlug" element={<LessonPage />} />
+        <Route path="/learn/paths" element={<PathsListPage />} />
+        <Route path="/learn/paths/:slug" element={<PathDetailPage />} />
+        <Route path="/learn/instructors/:slug" element={<InstructorPage />} />
+
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:slug" element={<EventDetailPage />} />
+        <Route path="/events/rgv-ai-coalition-kickoff/register" element={<LegacyEventHome />} />
+
+        <Route path="/community/partners" element={<PartnersPage />} />
+        <Route path="/community/partners/:slug" element={<PartnerDetailPage />} />
+        <Route path="/community/government" element={<GovernmentPage />} />
+        <Route path="/community/educators" element={<EducatorsPage />} />
+        <Route path="/community/small-business" element={<SmallBusinessPage />} />
+        <Route path="/community/nonprofits" element={<NonprofitsPage />} />
+        <Route path="/community/volunteer" element={<VolunteerPage />} />
+
+        <Route path="/resources/news" element={<NewsPage />} />
+        <Route path="/resources/news/:slug" element={<NewsArticlePage />} />
+        <Route path="/resources/prompts" element={<PromptsPage />} />
+        <Route path="/resources/downloads" element={<DownloadsPage />} />
+        <Route path="/resources/tools" element={<ToolsPage />} />
+
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/about/sponsors" element={<SponsorsPage />} />
+        <Route path="/about/partner" element={<PartnerWithUsPage />} />
+        <Route path="/about/contact" element={<ContactPage />} />
+
+        <Route path="/digital-literacy" element={<Navigate to="/community/government" replace />} />
+
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </BrowserRouter>
+    </Suspense>
   )
 }
