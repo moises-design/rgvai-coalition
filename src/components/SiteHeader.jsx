@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/digital-literacy', label: 'Digital Literacy' },
+  { to: '/ai-for-healthcare', label: 'AI for Healthcare' },
 ]
 
 export default function SiteHeader() {

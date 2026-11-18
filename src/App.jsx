@@ -8,6 +8,7 @@ import MemberPortal from './components/MemberPortal'
 import SuperAdminLogin from './components/SuperAdminLogin'
 import SuperAdminDashboard from './components/SuperAdminDashboard'
 import DigitalLiteracyPage from './components/DigitalLiteracyPage'
+import AiForHealthcarePage from './components/AiForHealthcarePage'
 import SiteHeader from './components/SiteHeader'
 import SiteFooter from './components/SiteFooter'
 import usePageMeta from './hooks/usePageMeta'
@@ -121,6 +122,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/digital-literacy" element={<DigitalLiteracyPage />} />
+        <Route path="/ai-for-healthcare" element={<AiForHealthcarePage />} />
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />

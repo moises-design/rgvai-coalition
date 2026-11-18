@@ -8,6 +8,8 @@ export default function SiteFooter() {
         <span className="footer-nav-sep" aria-hidden="true">·</span>
         <Link to="/digital-literacy" className="footer-nav-link">Digital Literacy</Link>
         <span className="footer-nav-sep" aria-hidden="true">·</span>
+        <Link to="/ai-for-healthcare" className="footer-nav-link">AI for Healthcare</Link>
+        <span className="footer-nav-sep" aria-hidden="true">·</span>
         <Link to="/member" className="footer-nav-link">Member login</Link>
       </nav>
       <p>© 2026 RGV AI Coalition · Edinburg, TX</p>

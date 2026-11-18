@@ -38,3 +38,7 @@ Launch-readiness audit: Run a launch-readiness audit (data access, third parties
 
 ## Launch-readiness audit
 Before each release, and whenever a vendor, form, price or AI feature changes: check data access, third parties, privacy paperwork, consent, health data, payments and email. Report each as pass/fail/unverified with file:line. Fix nothing without approval.
+
+## Decisions log
+- Nov 18, 2026: `/ai-for-healthcare` hosts the AI Front Desk workshop deck. The address and its `#laptops` / `#slide-N` links are printed on QR codes (`public/ai-for-healthcare/qr-laptops.png`), so do not rename the route or renumber the slides without reissuing the QR code.
+- Nov 18, 2026: The "Book your front desk review" form (`api/front-desk-review.js`, table `front_desk_review_requests`) collects clinic business contact details only. It must never ask for patient information.
