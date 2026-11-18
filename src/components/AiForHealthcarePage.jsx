@@ -192,7 +192,7 @@ export default function AiForHealthcarePage() {
   const hasContact = Boolean(RICH_CONTACT.email || RICH_CONTACT.phone)
 
   return (
-    <div className="page">
+    <div className="page afh-page">
       <SiteHeader />
 
       <main className="dl-main afh-main">

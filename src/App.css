@@ -1561,3 +1561,170 @@
     transition: none;
   }
 }
+
+/* ── AI for Healthcare: light theme matching the workshop deck ──
+   Scoped to this page only. Colors are sampled from the slides. */
+.afh-page {
+  --bg-deep: #f6f7fb;
+  --bg-card: #e7eaf1;
+  --bg-input: #ffffff;
+  --border: #cfd6e2;
+  --border-focus: #2a5074;
+  --cyan: #2a5074;
+  --cyan-dim: #1f3f5d;
+  --cyan-glow: rgba(42, 80, 116, 0.16);
+  --cyan-glow-strong: rgba(42, 80, 116, 0.28);
+  --text-primary: #1f2533;
+  --text-secondary: #4a5261;
+  --text-muted: #646c7b;
+  --error: #b3261e;
+  --afh-teal: #1b7480;
+  --afh-pale: #ddebee;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
+}
+
+.afh-page::before {
+  display: none;
+}
+
+.afh-page .site-header,
+.afh-page .site-footer {
+  background: #ffffff;
+}
+
+.afh-page .logo-badge,
+.afh-page .event-badge {
+  border-color: rgba(42, 80, 116, 0.35);
+  background: rgba(42, 80, 116, 0.07);
+}
+
+.afh-page .site-nav-link:hover,
+.afh-page .site-nav-link.active {
+  background: rgba(42, 80, 116, 0.08);
+}
+
+.afh-page .afh-hero-title,
+.afh-page .dl-section-title,
+.afh-page .afh-subhead,
+.afh-page .afh-copy-title,
+.afh-page .afh-form-sent-title,
+.afh-page .dl-contact-name {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.afh-page .afh-hero-title {
+  font-size: clamp(1.9rem, 4.2vw, 2.9rem);
+  line-height: 1.12;
+}
+
+.afh-page .afh-stage {
+  background: var(--bg-deep);
+  box-shadow: 0 12px 32px rgba(31, 37, 51, 0.12);
+}
+
+.afh-page .afh-nav-btn,
+.afh-page .afh-copy-btn,
+.afh-page .cta-btn-primary,
+.afh-page .submit-btn {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.afh-page .afh-nav-btn {
+  background: #ffffff;
+}
+
+.afh-page .afh-nav-btn-next,
+.afh-page .cta-btn-primary,
+.afh-page .submit-btn {
+  background: var(--cyan);
+  color: #ffffff;
+  border-radius: 100px;
+}
+
+.afh-page .afh-nav-btn-next:hover:not(:disabled),
+.afh-page .cta-btn-primary:hover,
+.afh-page .submit-btn:hover:not(:disabled) {
+  background: var(--cyan-dim);
+  color: #ffffff;
+  box-shadow: 0 6px 18px var(--cyan-glow-strong);
+}
+
+.afh-page .spinner {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+}
+
+.afh-page .afh-chip {
+  background: #ffffff;
+  font-family: inherit;
+}
+
+.afh-page .afh-chip:hover,
+.afh-page .afh-chip.active {
+  border-color: var(--cyan);
+  background: var(--cyan);
+  color: #ffffff;
+}
+
+.afh-page .afh-companion {
+  background: var(--afh-pale);
+  border-color: transparent;
+}
+
+.afh-page .afh-copy {
+  background: var(--bg-card);
+  border-color: transparent;
+}
+
+.afh-page .afh-companion .afh-copy {
+  background: #ffffff;
+}
+
+.afh-page .afh-copy-btn {
+  background: #ffffff;
+  border-color: var(--cyan);
+}
+
+.afh-page .afh-copy-btn:hover {
+  background: var(--cyan);
+  color: #ffffff;
+}
+
+.afh-page .afh-prompt-step strong {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.afh-page .dl-highlight-card {
+  background: var(--afh-pale);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.afh-page .afh-contact {
+  border-top-color: rgba(42, 80, 116, 0.2);
+}
+
+.afh-page .afh-contact-label {
+  color: var(--afh-teal) !important;
+}
+
+.afh-page .field-input.field-error {
+  box-shadow: 0 0 0 3px rgba(179, 38, 30, 0.12);
+}
+
+.afh-page .server-error {
+  background: rgba(179, 38, 30, 0.07);
+  border-color: rgba(179, 38, 30, 0.3);
+}
+
+.afh-page .afh-form-sent {
+  background: #ffffff;
+  border-color: rgba(42, 80, 116, 0.3);
+}
