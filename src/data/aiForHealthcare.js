@@ -103,23 +103,25 @@ export const FORM_DEMO = {
   id: 'survey-form',
   slide: FORM_SLIDE,
   title: 'Staff survey: what slows down our front desk?',
-  lead: 'Stop building forms one question at a time. Describe the survey and let AI draft it. Start with your own staff.',
-  text: 'Create a short anonymous staff survey for the front desk team at {{clinic}}. Title it “What slows down our front desk?” Do not ask for names and do not collect email addresses. Question 1, multiple choice, required: Which task takes the most of your day? Choices: phones, check-in, scheduling, reminder calls, billing questions, refill requests, other. Question 2, scale from 1 (rarely) to 5 (all day): How often do calls go to voicemail because everyone is busy? Question 3, short answer: Which task would you hand off first if you could? Question 4, paragraph: What is one thing that would make your day easier? Do not ask about patients. If you cannot create the form yourself, write out the questions and choices so I can paste them into a form.',
+  lead: 'Describe the survey. Let AI write it.',
+  text: 'Create an anonymous staff survey for {{clinic}}. Title: What slows down our front desk? Write four short questions. No names, no email addresses, nothing about patients.',
+  // `title` is what the slide shows; `body` is the extra detail on the page.
   steps: [
     {
-      title: 'Any AI tool writes the questions',
-      body: 'Paste the prompt into the tool your office has approved. You get the questions and answer choices back in about a minute.',
+      title: 'Ask any AI for the questions',
+      body: 'Paste the prompt into the tool your office has approved.',
     },
     {
-      title: 'In Google Forms, Gemini builds the form',
-      body: 'Go to forms.google.com, start a blank form, choose “Help me create a form”, and paste the same prompt. Your Google account needs Gemini features for this.',
+      title: 'Google Forms: “Help me create a form”',
+      body: 'At forms.google.com, start a blank form and paste the same prompt. Your Google account needs Gemini features for this.',
     },
     {
-      title: 'Link it to a sheet and share the link',
-      body: 'In the Responses tab choose “Link to Sheets”, then send the form link to your team. Every answer lands in the sheet.',
+      title: 'Link to Sheets, then share the link',
+      body: 'Find “Link to Sheets” in the Responses tab. Every answer lands in the sheet.',
     },
   ],
-  note: 'Thinking of a patient survey next? Keep it anonymous: no names, birth dates, or visit details. Google’s HIPAA agreement is only for paid Google Workspace accounts, so never collect anything that identifies a patient in a free Gmail account. Texting a survey link needs the patient’s consent to be texted.',
+  slideNote: 'Patient survey? Keep it anonymous. Never in a free Gmail account.',
+  note: 'Patient survey next? Keep it anonymous: no names, birth dates, or visit details. Google’s HIPAA agreement is only for paid Google Workspace accounts, so never collect anything that identifies a patient in a free Gmail account. Texting a survey link needs the patient’s consent.',
 }
 
 export const REMINDER_TEXTS = [

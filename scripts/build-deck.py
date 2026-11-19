@@ -226,21 +226,20 @@ for p in D['prompts']:
     text(s, LEFT + 0.33, top, WIDTH - 0.66, h, [dict(text='“' + p['text'] + '”', size=15, line=1.4)], anchor='middle', name='Prompt')
     text(s, LEFT, top + h + 0.28, WIDTH, 0.9, [dict(runs=[('Check it: ', dict(bold=True, color=NAVY)), (p['check'] + ' ', {}), ('Try next: ', dict(bold=True, color=NAVY)), (p['next'], {})], size=13, color=BODY, line=1.4)])
 
-# 17 one more thing: a staff survey form (demo, not hands-on)
+# 17 one more thing: a staff survey form (demo, not hands-on). Few words, big type:
+# the detail lives in the speaker notes and on the page.
 F = D['form']
-s = new_slide(notes_for(17, F['lead'] + '\n\n' + F['text'] + '\n\n' + '\n'.join(f"{i}. {st['title']}: {st['body']}" for i, st in enumerate(F['steps'], 1)) + '\n\n' + F['note']))
-title(s, T[16], 0.5, h=0.8)
-text(s, LEFT, 1.38, WIDTH, 0.5, [dict(text=F['lead'], size=17, color=BODY, line=1.25)])
-card(s, LEFT, 1.98, 6.55, 3.98, CARD)
-text(s, LEFT + 0.3, 1.98, 5.95, 3.98, [dict(text='“' + F['text'] + '”', size=13, line=1.33)], anchor='middle', name='Prompt')
-y = 2.02
-for i, st in enumerate(F['steps'], 1):
-    text(s, 7.5, y - 0.03, 0.55, 0.6, [dict(text=str(i), font=HEAD, bold=True, size=30, color=TEAL, line=1.0)])
-    text(s, 8.12, y, 4.64, 1.35, [dict(text=st['title'], font=HEAD, bold=True, size=17, color=INK, after=3, line=1.15),
-                                    dict(text=st['body'], size=13, color=BODY, line=1.3)])
-    y += 1.34
-card(s, LEFT, 6.12, WIDTH, 1.08, PALE, radius=0.16)
-text(s, LEFT + 0.28, 6.12, WIDTH - 0.56, 1.08, [dict(text=F['note'], size=13, color=INK, line=1.25)], anchor='middle')
+s = new_slide(notes_for(17, F['lead'] + '\n\n' + F['text'] + '\n\n' + '\n'.join(f"{i}. {st['title']}. {st['body']}" for i, st in enumerate(F['steps'], 1)) + '\n\n' + F['note']))
+title(s, T[16], 0.55, h=0.8)
+text(s, LEFT, 1.5, WIDTH, 0.6, [dict(text=F['lead'], size=24, color=BODY, line=1.2)])
+card(s, LEFT, 2.3, WIDTH, 1.85, CARD)
+text(s, LEFT + 0.4, 2.3, WIDTH - 0.8, 1.85, [dict(text='“' + F['text'] + '”', size=22, line=1.35)], anchor='middle', name='Prompt')
+for i, st in enumerate(F['steps']):
+    x = LEFT + i * 4.14
+    text(s, x, 4.5, 0.6, 0.8, [dict(text=str(i + 1), font=HEAD, bold=True, size=40, color=TEAL, line=1.0)])
+    text(s, x + 0.62, 4.55, 3.25, 1.2, [dict(text=st['title'], font=HEAD, bold=True, size=20, color=INK, line=1.2)])
+card(s, LEFT, 6.1, WIDTH, 0.8, PALE, radius=0.16)
+text(s, LEFT + 0.4, 6.1, WIDTH - 0.8, 0.8, [dict(text=F['slideNote'], size=19, bold=True, color=NAVY, line=1.2)], anchor='middle')
 
 # 18 do it yourself
 s = new_slide(T[17]); title(s, T[17], 0.5)
