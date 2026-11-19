@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
 
 const AI_TOOLS = [
@@ -172,7 +173,10 @@ export default function SignupForm({ onSuccess }) {
           ) : 'Reserve My Spot — May 20'}
         </button>
 
-        <p className="form-privacy">No spam, ever. Just event updates.</p>
+        <p className="form-privacy">
+          No spam, ever. Just event updates.{' '}
+          <Link to="/privacy" className="form-privacy-link">Privacy policy</Link>
+        </p>
       </form>
     </div>
   )
