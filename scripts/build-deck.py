@@ -98,11 +98,11 @@ def lead_bullets(items, size=16, after=11):
 def plain_bullets(items, color=INK, size=15.5, after=9):
     return [dict(text=t, size=size, color=color, bullet=True, after=after, line=1.3) for t in items]
 
-def numbered(slide, items, y0, gap, num_size=34):
+def numbered(slide, items, y0, gap, num_size=34, width=11.3):
     y = y0
     for i, (head, body) in enumerate(items, 1):
         text(slide, LEFT, y - 0.04, 0.7, 0.6, [dict(text=str(i), font=HEAD, bold=True, size=num_size, color=TEAL, line=1.0)])
-        text(slide, 1.46, y, 11.3, gap, [dict(text=head, font=HEAD, bold=True, size=21, color=INK, after=3, line=1.15),
+        text(slide, 1.46, y, width, gap, [dict(text=head, font=HEAD, bold=True, size=21, color=INK, after=3, line=1.15),
                                            dict(text=body, size=15.5, color=BODY, line=1.3)])
         y += gap
 
@@ -203,7 +203,14 @@ text(s, LEFT, 6.35, WIDTH, 0.8, [dict(text='The totals show you the pattern, not
 
 # 12 laptops out
 s = new_slide(notes_for(12, '\n\n'.join(f"{i}. {st['title']}\n{st['body']}" for i, st in enumerate(D['steps'], 1)))); title(s, T[11], 0.7)
-numbered(s, [(st['title'], st['body']) for st in D['steps']], 1.95, 1.32)
+numbered(s, [(st['title'], st['body']) for st in D['steps']], 1.95, 1.32, width=8.55)
+# QR code to the page, opening on this slide. Same image the site serves.
+card(s, 10.38, 2.0, 2.37, 2.37, WHITE, radius=0.16)
+s.shapes.add_picture(os.path.join(PUBLIC, 'qr-laptops.png'), Inches(10.46), Inches(2.08), width=Inches(2.21), height=Inches(2.21))
+text(s, 10.08, 4.5, 2.97, 1.2, [dict(text='Scan to follow along', font=HEAD, bold=True, size=16, color=INK, align='center', after=3),
+    dict(text='or open on your laptop:', size=13, color=BODY, align='center', after=2),
+    dict(text='rgvaicoalition.com', size=14, bold=True, color=NAVY, align='center', line=1.15),
+    dict(text='/ai-for-healthcare', size=14, bold=True, color=NAVY, align='center', line=1.15)])
 
 # 13-16 prompts
 for p in D['prompts']:
