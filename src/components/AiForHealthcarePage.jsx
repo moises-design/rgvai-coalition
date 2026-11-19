@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import usePageMeta from '../hooks/usePageMeta'
 import SiteHeader from './SiteHeader'
 import SiteFooter from './SiteFooter'
 import FrontDeskReviewForm from './FrontDeskReviewForm'
+import { ClinicContext } from './clinicContext'
 import {
   BOOK_SLIDE,
+  CLINIC_FIELDS,
   DECK_PDF,
   FRONT_DESK_SCRIPTS,
   JUMP_LINKS,
@@ -14,6 +16,7 @@ import {
   REMINDER_TEXTS,
   RICH_CONTACT,
   SLIDES,
+  fillTemplate,
 } from '../data/aiForHealthcare'
 
 const TOTAL = SLIDES.length
@@ -51,7 +54,75 @@ async function copyText(text) {
   }
 }
 
-function CopyBlock({ title, text, note, large }) {
+const STORAGE_KEY = 'afh-clinic'
+const EMPTY_CLINIC = { clinic: '', city: '', phone: '', hours: '' }
+
+function loadClinic() {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}')
+    return Object.fromEntries(
+      Object.keys(EMPTY_CLINIC).map(key => [key, typeof saved[key] === 'string' ? saved[key] : '']),
+    )
+  } catch {
+    return EMPTY_CLINIC
+  }
+}
+
+function saveClinic(clinic) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(clinic))
+  } catch {
+    // Private windows can block storage; the details then last until reload.
+  }
+}
+
+// A weekday about three weeks out, so the sample 7-day reminder is in the future.
+function sampleAppointmentDate() {
+  const date = new Date()
+  date.setDate(date.getDate() + 21)
+  while (date.getDay() === 0 || date.getDay() === 6) date.setDate(date.getDate() + 1)
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+function ClinicBox({ idPrefix }) {
+  const { clinic, setField, clear } = useContext(ClinicContext)
+  const hasAny = Object.values(clinic).some(value => value.trim())
+
+  return (
+    <div className="afh-clinic">
+      <div className="afh-clinic-head">
+        <h3 className="afh-clinic-title">Your clinic</h3>
+        {hasAny && (
+          <button type="button" className="afh-clinic-clear" onClick={clear}>
+            Back to sample details
+          </button>
+        )}
+      </div>
+      <p className="afh-clinic-lead">
+        Every prompt runs as pasted with a sample clinic. Type your details here and they replace the
+        sample in all four prompts and the take-home scripts. Clinic details only, never patient
+        information. They stay in this browser and are not sent anywhere.
+      </p>
+      <div className="afh-clinic-fields">
+        {CLINIC_FIELDS.map(field => (
+          <div className="field-group" key={field.key}>
+            <label className="field-label" htmlFor={`${idPrefix}-${field.key}`}>{field.label}</label>
+            <input
+              id={`${idPrefix}-${field.key}`} type={field.type || 'text'} maxLength={120}
+              className="field-input" autoComplete={field.autoComplete}
+              value={clinic[field.key]} onChange={e => setField(field.key, e.target.value)}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function CopyBlock({ title, text: template, note, large, mode = 'bracket' }) {
+  const { clinic, sampleDate } = useContext(ClinicContext)
+  const segments = fillTemplate(template, clinic, mode, sampleDate)
+  const text = segments.map(segment => segment.text).join('')
   const [status, setStatus] = useState('idle')
 
   async function handleCopy() {
@@ -68,7 +139,13 @@ function CopyBlock({ title, text, note, large }) {
           {status === 'copied' ? 'Copied' : status === 'failed' ? 'Select and copy' : 'Copy'}
         </button>
       </div>
-      <p className="afh-copy-text">{text}</p>
+      <p className="afh-copy-text">
+        {segments.map((segment, i) => (
+          segment.kind === 'text'
+            ? segment.text
+            : <span key={i} className={`afh-fill afh-fill-${segment.kind}`}>{segment.text}</span>
+        ))}
+      </p>
       {note && <p className="afh-copy-note">{note}</p>}
       <span className="afh-sr-only" role="status">
         {status === 'copied' ? `${title} copied to clipboard` : ''}
@@ -81,10 +158,22 @@ function PromptCard({ prompt }) {
   return (
     <div className="afh-prompt" id={prompt.id}>
       <p className="afh-prompt-lead">{prompt.lead}</p>
-      <CopyBlock title={prompt.title} text={prompt.text} large />
+      <CopyBlock title={prompt.title} text={prompt.text} large mode="sample" />
       <p className="afh-prompt-step"><strong>Check it:</strong> {prompt.check}</p>
       <p className="afh-prompt-step"><strong>Try next:</strong> {prompt.next}</p>
     </div>
+  )
+}
+
+// One line under each prompt slide saying whose details the prompt is using.
+function ClinicStatus() {
+  const { clinic } = useContext(ClinicContext)
+  const hasAny = Object.values(clinic).some(value => value.trim())
+  return (
+    <p className="afh-clinic-status">
+      {hasAny ? 'Using your clinic details where you filled them in. ' : 'Using a sample clinic. '}
+      <a href="#your-clinic">{hasAny ? 'Change them' : 'Use your own clinic'}</a>
+    </p>
   )
 }
 
@@ -96,6 +185,7 @@ function SlideCompanion({ slide }) {
     return (
       <div className="afh-companion">
         <PromptCard prompt={prompt} />
+        <ClinicStatus />
       </div>
     )
   }
@@ -116,8 +206,12 @@ function SlideCompanion({ slide }) {
 
   if (slide === LAPTOPS_SLIDE) {
     return (
-      <div className="afh-companion afh-companion-row">
-        <p>The next three slides are prompts. Each one has a Copy button right here under the slide.</p>
+      <div className="afh-companion">
+        <p className="afh-companion-note">
+          The next four slides are prompts. Each one has a Copy button right here under the slide,
+          and runs as pasted with a sample clinic.
+        </p>
+        <ClinicBox idPrefix="clinic-slide" />
       </div>
     )
   }
@@ -138,7 +232,7 @@ export default function AiForHealthcarePage() {
   usePageMeta({
     title: 'AI Front Desk Automation for Healthcare — RGV AI Coalition',
     description:
-      'Follow along with the AI Front Desk Automation for Healthcare workshop: the slides, three hands-on prompts ready to copy, and take-home front desk scripts.',
+      'Follow along with the AI Front Desk Automation for Healthcare workshop: the slides, four hands-on prompts ready to copy, and take-home front desk scripts.',
     ogTitle: 'AI Front Desk Automation for Healthcare — RGV AI Coalition',
     ogDescription:
       'Workshop slides, hands-on prompts ready to copy, and take-home front desk scripts for healthcare teams in the Rio Grande Valley.',
@@ -146,6 +240,24 @@ export default function AiForHealthcarePage() {
   })
 
   const [slide, setSlide] = useState(() => slideFromHash(window.location.hash) || 1)
+  const [clinic, setClinic] = useState(loadClinic)
+  const [sampleDate] = useState(sampleAppointmentDate)
+
+  const clinicContext = useMemo(() => ({
+    clinic,
+    sampleDate,
+    setField(key, value) {
+      setClinic(prev => {
+        const next = { ...prev, [key]: value }
+        saveClinic(next)
+        return next
+      })
+    },
+    clear() {
+      setClinic(EMPTY_CLINIC)
+      saveClinic(EMPTY_CLINIC)
+    },
+  }), [clinic, sampleDate])
 
   const goTo = useCallback((n) => {
     const next = Math.min(TOTAL, Math.max(1, n))
@@ -192,6 +304,7 @@ export default function AiForHealthcarePage() {
   const hasContact = Boolean(RICH_CONTACT.email || RICH_CONTACT.phone)
 
   return (
+    <ClinicContext.Provider value={clinicContext}>
     <div className="page afh-page">
       <SiteHeader />
 
@@ -260,6 +373,9 @@ export default function AiForHealthcarePage() {
             Use the AI tool your office has approved, and sample data only. Never type in real patient
             information. Run each prompt, then check one fact before you trust the answer.
           </p>
+          <div id="your-clinic" className="afh-clinic-anchor">
+            <ClinicBox idPrefix="clinic-main" />
+          </div>
           <div className="afh-prompt-list">
             {PROMPTS.map(prompt => <PromptCard key={prompt.id} prompt={prompt} />)}
           </div>
@@ -310,5 +426,6 @@ export default function AiForHealthcarePage() {
 
       <SiteFooter />
     </div>
+    </ClinicContext.Provider>
   )
 }
