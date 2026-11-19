@@ -135,7 +135,7 @@
   transform: rotate(-90deg);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .site-header {
     padding-left: 20px;
     padding-right: 20px;
@@ -419,6 +419,119 @@
   .dl-info-card:hover,
   .site-nav-cta:hover {
     transform: none;
+  }
+}
+
+/* ── Workshops page ── */
+.ws-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  list-style: none;
+}
+
+.ws-step {
+  background: var(--bg-card);
+  border-radius: 18px;
+  padding: 22px 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.ws-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--brand-gradient);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.ws-step .dl-card-title {
+  margin-bottom: 6px;
+}
+
+.ws-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.ws-card .dl-card-title {
+  margin-bottom: 4px;
+}
+
+.ws-status {
+  align-self: flex-start;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 980px;
+  background: var(--bg-soft);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ws-status-ready {
+  background: rgba(21, 128, 61, 0.12);
+  color: #116232;
+}
+
+.ws-examples,
+.ws-list {
+  margin: 12px 0 16px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.ws-list {
+  font-size: 1rem;
+  gap: 8px;
+  color: var(--text-primary);
+}
+
+.ws-link {
+  margin-top: auto;
+  color: var(--cyan-dim);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ws-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ws-host {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 40px;
+}
+
+.ws-host .afh-subhead {
+  margin: 12px 0 0;
+}
+
+@media (max-width: 900px) {
+  .ws-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .ws-steps,
+  .ws-host {
+    grid-template-columns: 1fr;
   }
 }
 

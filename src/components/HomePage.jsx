@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import usePageMeta from '../hooks/usePageMeta'
 import SiteHeader from './SiteHeader'
 import SiteFooter from './SiteFooter'
@@ -7,6 +7,7 @@ import SignupForm from './SignupForm'
 import SuccessScreen from './SuccessScreen'
 import HeroOrb from './HeroOrb'
 import TiltCard from './TiltCard'
+import NextMeetup from './NextMeetup'
 
 const PILLARS = [
   {
@@ -126,6 +127,8 @@ export default function HomePage() {
           <HeroOrb />
         </section>
 
+        <NextMeetup />
+
         <section className="home-section home-pillars" aria-label="What we do">
           {PILLARS.map((pillar, i) => (
             <div className="pillar" key={pillar.title} data-reveal style={{ '--delay': `${i * 90}ms` }}>
@@ -188,6 +191,14 @@ export default function HomePage() {
                 <span className="program-link">Open the workshop <Arrow /></span>
               </TiltCard>
             </div>
+          </div>
+
+          <div className="host-band" data-reveal>
+            <div>
+              <h3 className="host-band-title">Bring a hands-on workshop to your group.</h3>
+              <p className="host-band-body">You bring the room. We bring the slides, a follow-along page and the QR codes.</p>
+            </div>
+            <Link to="/workshops" className="btn btn-dark">See workshops <Arrow /></Link>
           </div>
 
           <ul className="audience-list" aria-label="Who our programs are for" data-reveal>

@@ -9,6 +9,7 @@ import SuperAdminDashboard from './components/SuperAdminDashboard'
 import DigitalLiteracyPage from './components/DigitalLiteracyPage'
 import AiForHealthcarePage from './components/AiForHealthcarePage'
 import PrivacyPage from './components/PrivacyPage'
+import WorkshopsPage from './components/WorkshopsPage'
 import './App.css'
 import './theme.css'
 import './home.css'
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/digital-literacy" element={<DigitalLiteracyPage />} />
         <Route path="/ai-for-healthcare" element={<AiForHealthcarePage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />
