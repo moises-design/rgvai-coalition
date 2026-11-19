@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { WORKFLOW_OPTIONS } from '../data/aiForHealthcare'
 
 const EMPTY = { name: '', clinic: '', email: '', phone: '', workflow: '', message: '', website: '' }
@@ -167,7 +168,8 @@ export default function FrontDeskReviewForm() {
       </button>
 
       <p className="form-privacy">
-        We use these details only to contact you about your front desk review.
+        We use these details only to contact you about your front desk review.{' '}
+        <Link to="/privacy" className="form-privacy-link">Privacy policy</Link>
       </p>
     </form>
   )

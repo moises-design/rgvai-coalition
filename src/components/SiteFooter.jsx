@@ -11,6 +11,8 @@ export default function SiteFooter() {
         <Link to="/ai-for-healthcare" className="footer-nav-link">AI for Healthcare</Link>
         <span className="footer-nav-sep" aria-hidden="true">·</span>
         <Link to="/member" className="footer-nav-link">Member login</Link>
+        <span className="footer-nav-sep" aria-hidden="true">·</span>
+        <Link to="/privacy" className="footer-nav-link">Privacy</Link>
       </nav>
       <p>© 2026 RGV AI Coalition · Edinburg, TX</p>
     </footer>
