@@ -9,9 +9,9 @@ const LAST_UPDATED = 'November 19, 2026'
 // is added or changed, update the matching section here in the same PR.
 const COLLECTED = [
   {
-    title: 'Event sign-up',
+    title: 'Joining the coalition',
     what: 'Your name, email address, phone number if you choose to give it, and the AI tools you pick.',
-    why: 'To save your spot, send you event updates and reminders by email, and let you sign in to the member portal.',
+    why: 'To add you as a member, send you meeting updates and reminders by email, and let you sign in to the member portal.',
   },
   {
     title: 'Member portal',

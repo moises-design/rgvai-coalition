@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { buildDayBeforeEmail } from './_email.js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
@@ -40,10 +41,10 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'RGV AI Coalition <onboarding@resend.dev>',
+          from: 'RGV AI Coalition <hello@rgvaicoalition.com>',
           to: member.email,
-          subject: `See you tomorrow — RGV AI Coalition at ${meeting.event_time}`,
-          html: `<p>Hi ${member.name},</p><p>Just a reminder: the RGV AI Coalition meeting is <strong>tomorrow at ${meeting.event_time}</strong> at ${meeting.location}.</p>${meeting.notes ? `<p>${meeting.notes}</p>` : ''}<p>You confirmed your attendance — see you there!</p>`,
+          subject: `See you tomorrow: RGV AI Coalition at ${meeting.event_time}`,
+          html: buildDayBeforeEmail(member.name, meeting),
         }),
       })
     )
