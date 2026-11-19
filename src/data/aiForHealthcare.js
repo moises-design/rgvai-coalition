@@ -30,6 +30,7 @@ export const SLIDES = [
   { title: 'Try it now, prompt 1: build your reminder sequence' },
   { title: 'Try it now, prompt 2: find your worst no-show day' },
   { title: 'Try it now, prompt 3: draft a bilingual service flyer' },
+  { title: 'Try it now, prompt 4: a safe starter for any front desk task' },
   { title: 'Doing it yourself is doable. Here is the real workload.' },
   { title: 'Done for you: we build it, run the pilot, and prove it' },
   { title: 'Let your front desk breathe again' },
@@ -40,7 +41,7 @@ export const SLIDES = [
 }))
 
 export const LAPTOPS_SLIDE = 12
-export const BOOK_SLIDE = 18
+export const BOOK_SLIDE = 19
 
 export const JUMP_LINKS = [
   { slide: 1, label: 'Start' },
@@ -49,6 +50,7 @@ export const JUMP_LINKS = [
   { slide: 13, label: 'Prompt 1' },
   { slide: 14, label: 'Prompt 2' },
   { slide: 15, label: 'Prompt 3' },
+  { slide: 16, label: 'Prompt 4' },
   { slide: BOOK_SLIDE, label: 'Book a review' },
 ]
 
@@ -79,6 +81,15 @@ export const PROMPTS = [
     text: 'You are the communications coordinator for {{clinic}} in {{city}}. Write a service flyer in English, followed by Spanish, for our appointment scheduling assistance service. Staff help callers find an available appointment and explain what documents the office requests. Office hours are {{hours}}. Call {{phone}} to ask about scheduling. Use a clear headline, two short benefit statements, and one call to action in each language. Keep each version under 80 words. Use only these facts. Do not promise medical outcomes or same-day availability. Finish with a separate note listing anything the office should confirm before publishing.',
     check: 'Does the Spanish preserve every fact, the hours and the phone, and did the draft add a benefit you never supplied?',
     next: 'Shorten both versions for a square social post, keeping the phone and hours.',
+  },
+  {
+    id: 'prompt-4',
+    slide: 16,
+    title: 'Prompt 4: a safe starter for any front desk task',
+    lead: 'Use this frame for any task. Change the task sentence, keep the rules.',
+    text: 'You are a front desk assistant for {{clinic}} in {{city}}. My task: write a voicemail greeting for callers who reach us after hours. Use only the facts I give you: office hours are {{hours}} and the office phone is {{phone}}. Do not use or ask for patient names or any patient information. Do not give medical advice, approve medication, or promise insurance payment or same-day availability. Write in plain language a patient can follow quickly, in English, followed by Spanish. If you need a fact I did not give you, ask me instead of guessing. Finish with a short list of anything the office should confirm before using it.',
+    check: 'Did it add a fact, a promise, or a policy you never supplied? Read the Spanish out loud.',
+    next: 'Change only the task sentence, for example a no-show follow-up call script or a holiday closure notice, and run it again.',
   },
 ]
 
@@ -195,3 +206,23 @@ export function fillTemplate(template, clinic, mode, sampleDate) {
     return { text: BRACKETS[token] || part, kind: 'bracket' }
   })
 }
+
+// Slide 12 ("Laptops out") steps, used to rebuild that slide in the deck.
+export const LAPTOPS_STEPS = [
+  {
+    title: 'Open your approved AI tool',
+    body: 'Sign in to the tool your office has approved. The next four slides are complete prompts, ready to copy from the page exactly as written.',
+  },
+  {
+    title: 'Use sample data only',
+    body: 'Never type in real patient information. Every prompt here runs on a sample clinic and the example numbers on the slide.',
+  },
+  {
+    title: 'Run it, then check one fact',
+    body: 'A confident answer can still be wrong. Recount the characters, redo the arithmetic, and check that the draft added nothing you did not supply.',
+  },
+  {
+    title: 'Swap in your clinic and run it again',
+    body: 'Type your real clinic name, city, hours, and phone into the Your clinic box on the page, still with no patient details, and compare the two results side by side.',
+  },
+]

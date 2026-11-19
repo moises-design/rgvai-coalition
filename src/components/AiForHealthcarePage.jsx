@@ -100,7 +100,7 @@ function ClinicBox({ idPrefix }) {
       </div>
       <p className="afh-clinic-lead">
         Every prompt runs as pasted with a sample clinic. Type your details here and they replace the
-        sample in all three prompts and the take-home scripts. Clinic details only, never patient
+        sample in all four prompts and the take-home scripts. Clinic details only, never patient
         information. They stay in this browser and are not sent anywhere.
       </p>
       <div className="afh-clinic-fields">
@@ -208,7 +208,7 @@ function SlideCompanion({ slide }) {
     return (
       <div className="afh-companion">
         <p className="afh-companion-note">
-          The next three slides are prompts. Each one has a Copy button right here under the slide,
+          The next four slides are prompts. Each one has a Copy button right here under the slide,
           and runs as pasted with a sample clinic.
         </p>
         <ClinicBox idPrefix="clinic-slide" />
@@ -232,7 +232,7 @@ export default function AiForHealthcarePage() {
   usePageMeta({
     title: 'AI Front Desk Automation for Healthcare — RGV AI Coalition',
     description:
-      'Follow along with the AI Front Desk Automation for Healthcare workshop: the slides, three hands-on prompts ready to copy, and take-home front desk scripts.',
+      'Follow along with the AI Front Desk Automation for Healthcare workshop: the slides, four hands-on prompts ready to copy, and take-home front desk scripts.',
     ogTitle: 'AI Front Desk Automation for Healthcare — RGV AI Coalition',
     ogDescription:
       'Workshop slides, hands-on prompts ready to copy, and take-home front desk scripts for healthcare teams in the Rio Grande Valley.',
