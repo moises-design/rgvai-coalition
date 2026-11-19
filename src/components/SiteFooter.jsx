@@ -14,6 +14,7 @@ export default function SiteFooter() {
           <Link to="/digital-literacy" className="footer-nav-link">Digital Literacy</Link>
           <Link to="/ai-for-healthcare" className="footer-nav-link">AI for Healthcare</Link>
           <Link to="/member" className="footer-nav-link">Member login</Link>
+          <Link to="/privacy" className="footer-nav-link">Privacy</Link>
           <a href="mailto:hello@rgvaicoalition.com" className="footer-nav-link">Contact</a>
         </nav>
       </div>
