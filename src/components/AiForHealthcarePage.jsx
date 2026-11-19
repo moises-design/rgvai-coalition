@@ -8,6 +8,8 @@ import {
   BOOK_SLIDE,
   CLINIC_FIELDS,
   DECK_PDF,
+  FORM_DEMO,
+  FORM_SLIDE,
   FRONT_DESK_SCRIPTS,
   JUMP_LINKS,
   LAPTOPS_SLIDE,
@@ -165,6 +167,25 @@ function PromptCard({ prompt }) {
   )
 }
 
+// The "one more thing" demo: a prompt that drafts a staff survey, the steps to
+// turn it into a Google Form, and the patient-information warning.
+function FormDemo({ headingId }) {
+  return (
+    <div className="afh-prompt">
+      <p className="afh-prompt-lead">{FORM_DEMO.lead}</p>
+      <CopyBlock title={FORM_DEMO.title} text={FORM_DEMO.text} large mode="sample" />
+      <ol className="afh-steps" aria-labelledby={headingId}>
+        {FORM_DEMO.steps.map(step => (
+          <li key={step.title}>
+            <strong>{step.title}.</strong> {step.body}
+          </li>
+        ))}
+      </ol>
+      <p className="afh-caution">{FORM_DEMO.note}</p>
+    </div>
+  )
+}
+
 // One line under each prompt slide saying whose details the prompt is using.
 function ClinicStatus() {
   const { clinic } = useContext(ClinicContext)
@@ -212,6 +233,15 @@ function SlideCompanion({ slide }) {
           and runs as pasted with a sample clinic.
         </p>
         <ClinicBox idPrefix="clinic-slide" />
+      </div>
+    )
+  }
+
+  if (slide === FORM_SLIDE) {
+    return (
+      <div className="afh-companion">
+        <FormDemo />
+        <ClinicStatus />
       </div>
     )
   }
@@ -379,6 +409,11 @@ export default function AiForHealthcarePage() {
           <div className="afh-prompt-list">
             {PROMPTS.map(prompt => <PromptCard key={prompt.id} prompt={prompt} />)}
           </div>
+        </section>
+
+        <section className="dl-section" id={FORM_DEMO.id}>
+          <h2 className="dl-section-title" id="survey-form-title">One more thing: let AI build your survey form</h2>
+          <FormDemo headingId="survey-form-title" />
         </section>
 
         <section className="dl-section" id="scripts">

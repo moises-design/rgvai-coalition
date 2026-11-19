@@ -1,8 +1,10 @@
 // Content for /ai-for-healthcare, transcribed from the workshop deck
 // (public/ai-for-healthcare/ai-front-desk-healthcare-deck.pdf).
-// Wording follows the slides, except that the slides' [brackets] are written
-// here as {{tokens}} so the page can fill them: with sample values (prompts)
-// or the visitor's own clinic details (prompts and scripts). See fillTemplate.
+// The slides show short versions in large type (the `short` fields), since
+// they are presented live; the full wording here is what the page shows and
+// what goes in the speaker notes. [brackets] are written as {{tokens}} so the
+// page can fill them: with sample values (prompts) or the visitor's own clinic
+// details (prompts and scripts). See fillTemplate.
 
 export const DECK_PDF = '/ai-for-healthcare/ai-front-desk-healthcare-deck.pdf'
 
@@ -31,6 +33,7 @@ export const SLIDES = [
   { title: 'Try it now, prompt 2: find your worst no-show day' },
   { title: 'Try it now, prompt 3: draft a bilingual service flyer' },
   { title: 'Try it now, prompt 4: a safe starter for any front desk task' },
+  { title: 'One more thing: let AI build your survey form' },
   { title: 'Doing it yourself is doable. Here is the real workload.' },
   { title: 'Done for you: we build it, run the pilot, and prove it' },
   { title: 'Let your front desk breathe again' },
@@ -41,7 +44,8 @@ export const SLIDES = [
 }))
 
 export const LAPTOPS_SLIDE = 12
-export const BOOK_SLIDE = 19
+export const FORM_SLIDE = 17
+export const BOOK_SLIDE = 20
 
 export const JUMP_LINKS = [
   { slide: 1, label: 'Start' },
@@ -51,6 +55,7 @@ export const JUMP_LINKS = [
   { slide: 14, label: 'Prompt 2' },
   { slide: 15, label: 'Prompt 3' },
   { slide: 16, label: 'Prompt 4' },
+  { slide: FORM_SLIDE, label: 'Survey form' },
   { slide: BOOK_SLIDE, label: 'Book a review' },
 ]
 
@@ -59,6 +64,8 @@ export const PROMPTS = [
     id: 'prompt-1',
     slide: 13,
     title: 'Prompt 1: build your reminder sequence',
+    short: 'Draft three text reminders for one appointment: 7 days before, 2 days before, and the morning of. Under 160 characters each.',
+    shortCheck: 'Count the characters.',
     lead: 'Copy this into your AI tool, run it, and check the result before we move on.',
     text: 'You coordinate scheduling for {{clinic}}. Draft three short text reminders for an appointment on {{date}} at {{time}}: one for 7 days before, one for 2 days before, and one for the morning of. The office phone is {{phone}}. Tell patients to call the office if the appointment needs to change. Do not say patients can reply to the text. Keep each message under 160 characters. Show the send date, the message, and the character count. Then suggest two practical ways a two-person front desk could track cancellations and fill openings using its existing scheduling system and phone.',
     check: 'Count the characters with a tool, and confirm the dates and time match in all three texts.',
@@ -68,6 +75,8 @@ export const PROMPTS = [
     id: 'prompt-2',
     slide: 14,
     title: 'Prompt 2: find your worst no-show day',
+    short: 'Here is one month of no-shows by weekday. Calculate each day’s rate, rank the days, and propose a two-week reminder pilot.',
+    shortCheck: 'Redo the math: 58 ÷ 420 = 13.8%.',
     lead: 'Run it first on this training data, then swap in your own month of totals, no patient names needed.',
     text: 'You support operations at {{clinic}}. Analyze this training dataset for one month: Monday 100 scheduled and 18 no-shows; Tuesday 80 and 8; Wednesday 100 and 12; Thursday 80 and 8; Friday 60 and 12. Calculate the no-show rate for each day and the overall rate, showing your arithmetic. Rank the days by rate. Explain why these totals cannot tell us what caused the pattern. Propose one two-week reminder pilot that a two-person front desk can run using the existing scheduling system and phone. Define a primary metric and a balancing metric. Do not claim the pilot has already improved results.',
     check: 'Redo the totals yourself, 58 no-shows out of 420 scheduled is 13.8%, and separate the highest rate, Friday at 20%, from the highest count.',
@@ -77,6 +86,8 @@ export const PROMPTS = [
     id: 'prompt-3',
     slide: 15,
     title: 'Prompt 3: draft a bilingual service flyer',
+    short: 'Write a service flyer in English, then Spanish. Under 80 words each. Use only these facts.',
+    shortCheck: 'Read the Spanish out loud.',
     lead: 'Run it, then add your clinic details and run it again. Read the Spanish version out loud before you trust it.',
     text: 'You are the communications coordinator for {{clinic}} in {{city}}. Write a service flyer in English, followed by Spanish, for our appointment scheduling assistance service. Staff help callers find an available appointment and explain what documents the office requests. Office hours are {{hours}}. Call {{phone}} to ask about scheduling. Use a clear headline, two short benefit statements, and one call to action in each language. Keep each version under 80 words. Use only these facts. Do not promise medical outcomes or same-day availability. Finish with a separate note listing anything the office should confirm before publishing.',
     check: 'Does the Spanish preserve every fact, the hours and the phone, and did the draft add a benefit you never supplied?',
@@ -86,12 +97,42 @@ export const PROMPTS = [
     id: 'prompt-4',
     slide: 16,
     title: 'Prompt 4: a safe starter for any front desk task',
+    short: 'My task: write an after-hours voicemail greeting. Use only the facts I give you. No patient information. Ask me instead of guessing.',
+    shortCheck: 'Did it add anything you never supplied?',
     lead: 'Use this frame for any task. Change the task sentence, keep the rules.',
     text: 'You are a front desk assistant for {{clinic}} in {{city}}. My task: write a voicemail greeting for callers who reach us after hours. Use only the facts I give you: office hours are {{hours}} and the office phone is {{phone}}. Do not use or ask for patient names or any patient information. Do not give medical advice, approve medication, or promise insurance payment or same-day availability. Write in plain language a patient can follow quickly, in English, followed by Spanish. If you need a fact I did not give you, ask me instead of guessing. Finish with a short list of anything the office should confirm before using it.',
     check: 'Did it add a fact, a promise, or a policy you never supplied? Read the Spanish out loud.',
     next: 'Change only the task sentence, for example a no-show follow-up call script or a holiday closure notice, and run it again.',
   },
 ]
+
+// Slide 17: a demo, not a fifth hands-on prompt. The presenter builds the form
+// once on screen; attendees copy the prompt and try it back at the office.
+// The example is a staff survey on purpose: it involves no patient information.
+export const FORM_DEMO = {
+  id: 'survey-form',
+  slide: FORM_SLIDE,
+  title: 'Staff survey: what slows down our front desk?',
+  lead: 'Describe the survey. Let AI write it.',
+  text: 'Create an anonymous staff survey for {{clinic}}. Title: What slows down our front desk? Write four short questions. No names, no email addresses, nothing about patients.',
+  // `title` is what the slide shows; `body` is the extra detail on the page.
+  steps: [
+    {
+      title: 'Ask any AI for the questions',
+      body: 'Paste the prompt into the tool your office has approved.',
+    },
+    {
+      title: 'Google Forms: “Help me create a form”',
+      body: 'At forms.google.com, start a blank form and paste the same prompt. Your Google account needs Gemini features for this.',
+    },
+    {
+      title: 'Link to Sheets, then share the link',
+      body: 'Find “Link to Sheets” in the Responses tab. Every answer lands in the sheet.',
+    },
+  ],
+  slideNote: 'Patient survey? Keep it anonymous. Never in a free Gmail account.',
+  note: 'Patient survey next? Keep it anonymous: no names, birth dates, or visit details. Google’s HIPAA agreement is only for paid Google Workspace accounts, so never collect anything that identifies a patient in a free Gmail account. Texting a survey link needs the patient’s consent.',
+}
 
 export const REMINDER_TEXTS = [
   {
@@ -114,6 +155,9 @@ export const REMINDER_TEXTS = [
   },
 ]
 
+// One line for the slide; the full note below is on the page and in the speaker notes.
+export const REMINDER_SHORT_NOTE = 'Under 160 characters. Patients call to change. They never reply to the text.'
+
 export const REMINDER_NOTE =
   'Copy them as written, swap in your clinic name, date, time, and phone, and keep each one under 160 characters. Tell patients to call to change, never to reply to the text. Then keep a daily cancellation log and a call-back list of patients who agreed to be called about earlier openings, so a cancelled slot gets offered the same day.'
 
@@ -124,6 +168,7 @@ export const FRONT_DESK_SCRIPTS = [
     title: 'Every call, the opening',
     text: 'Thank you for calling {{clinic}}. How can I help?',
     note: 'For scheduling, ask: “Are you calling to schedule or change an appointment?” Then offer only slots the system actually shows.',
+    shortNote: 'Offer only slots the system shows.',
   },
   {
     id: 'script-refill',
@@ -131,6 +176,7 @@ export const FRONT_DESK_SCRIPTS = [
     title: 'Refill requests',
     text: 'Are you calling about a medication refill request? I can route your request to our clinical team. They handle refill decisions.',
     note: 'The front desk never approves medication or promises a completion time.',
+    shortNote: 'Never approve medication or promise a time.',
   },
   {
     id: 'script-billing',
@@ -138,6 +184,7 @@ export const FRONT_DESK_SCRIPTS = [
     title: 'Billing questions',
     text: 'Is your question about a statement or insurance payment? I can route your question to our billing coordinator.',
     note: 'The front desk never guarantees insurance payment.',
+    shortNote: 'Never guarantee insurance payment.',
   },
   {
     id: 'script-review',
@@ -145,6 +192,7 @@ export const FRONT_DESK_SCRIPTS = [
     title: 'A public review reply',
     text: 'Thank you for sharing this concern. Clear communication matters to our team. Please contact our office manager at {{officePhone}} so we can listen and address your feedback privately.',
     note: 'Never confirm the reviewer was a patient.',
+    shortNote: 'Never confirm the reviewer was a patient.',
   },
 ]
 
@@ -212,17 +260,21 @@ export const LAPTOPS_STEPS = [
   {
     title: 'Open your approved AI tool',
     body: 'Sign in to the tool your office has approved. The next four slides are complete prompts, ready to copy from the page exactly as written.',
+    short: 'The next four slides are prompts. Copy them from the page.',
   },
   {
     title: 'Use sample data only',
     body: 'Never type in real patient information. Every prompt here runs on a sample clinic and the example numbers on the slide.',
+    short: 'Never real patient information.',
   },
   {
     title: 'Run it, then check one fact',
     body: 'A confident answer can still be wrong. Recount the characters, redo the arithmetic, and check that the draft added nothing you did not supply.',
+    short: 'A confident answer can still be wrong.',
   },
   {
     title: 'Swap in your clinic and run it again',
     body: 'Type your real clinic name, city, hours, and phone into the Your clinic box on the page, still with no patient details, and compare the two results side by side.',
+    short: 'Use the Your clinic box. Still no patient details.',
   },
 ]
