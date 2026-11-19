@@ -404,6 +404,74 @@
   font-weight: 500;
 }
 
+.host-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  margin-top: 20px;
+  padding: 28px 32px;
+  border-radius: 26px;
+  background: var(--bg-soft);
+}
+
+.host-band-title {
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.host-band-body {
+  margin-top: 6px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.btn-dark {
+  background: var(--text-primary);
+  color: #ffffff;
+}
+
+.btn-dark:hover {
+  background: #000000;
+  transform: translateY(-1px);
+}
+
+/* ── Next meetup (shown only when a future meeting is saved) ── */
+.next-meetup {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.next-meetup-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  padding: 28px 32px;
+  border-radius: 26px;
+  background: linear-gradient(120deg, rgba(21, 87, 255, 0.08), rgba(122, 77, 255, 0.07) 55%, rgba(255, 122, 89, 0.09));
+}
+
+.next-meetup-card .eyebrow {
+  margin-bottom: 6px;
+}
+
+.next-meetup-title {
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.next-meetup-detail {
+  margin-top: 4px;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+}
+
 /* ── Join ── */
 .home-join {
   display: grid;
