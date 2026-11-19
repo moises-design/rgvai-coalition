@@ -41,7 +41,7 @@ export default async function handler(req, res) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: 'RGV AI Coalition <onboarding@resend.dev>',
+          from: 'RGV AI Coalition <hello@rgvaicoalition.com>',
           to: member.email,
           subject: `See you tomorrow: RGV AI Coalition at ${meeting.event_time}`,
           html: buildDayBeforeEmail(member.name, meeting),

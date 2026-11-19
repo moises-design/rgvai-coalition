@@ -62,7 +62,7 @@ function MemberLogin({ notice }) {
               We sent a login link to <strong>{email}</strong>.
               Click it to access your member page.
             </p>
-            <p className="success-footer">Link expires in 1 hour. Didn't get it? Check spam or try again.</p>
+            <p className="success-footer">Link expires in 24 hours. Didn't get it? Check spam or try again.</p>
           </div>
         </main>
       </div>
