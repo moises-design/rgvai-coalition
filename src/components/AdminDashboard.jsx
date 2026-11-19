@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Logo from './Logo'
 
 const RSVP_COLUMNS = [
   { key: 'name',         label: 'Name' },
@@ -35,9 +36,9 @@ function exportCsv(rows) {
 }
 
 const ROLE_COLORS = {
-  member:      { color: '#8aa4c2', border: 'rgba(138,164,194,0.3)' },
-  admin:       { color: '#f0b429', border: 'rgba(240,180,41,0.3)' },
-  super_admin: { color: '#a78bfa', border: 'rgba(167,139,250,0.3)' },
+  member:      { color: '#5b6472', border: 'rgba(138,164,194,0.3)' },
+  admin:       { color: '#9a5b00', border: 'rgba(240,180,41,0.3)' },
+  super_admin: { color: '#6d3fd6', border: 'rgba(167,139,250,0.3)' },
 }
 
 function RoleBadge({ role }) {
@@ -83,7 +84,7 @@ export default function AdminDashboard({ token }) {
   return (
     <div className="page">
       <header className="site-header" style={{ justifyContent: 'space-between' }}>
-        <span className="logo-badge">RGV AI</span>
+        <Logo />
         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Admin</span>
       </header>
 

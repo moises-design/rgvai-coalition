@@ -55,7 +55,7 @@ export default function SignupForm({ onSuccess }) {
     setSubmitting(false)
     if (error) {
       if (error.code === '23505') {
-        setServerError('This email is already registered. See you there!')
+        setServerError('This email is already a member. Use Member login to get a new portal link.')
       } else {
         setServerError('Something went wrong. Please try again.')
       }
@@ -71,17 +71,9 @@ export default function SignupForm({ onSuccess }) {
 
   return (
     <div className="form-card">
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-        <img
-          src="/rgvai-logo.png"
-          alt="RGV AI Coalition"
-          style={{ width: '160px', height: '160px', borderRadius: '50%', objectFit: 'cover', display: 'block' }}
-        />
-      </div>
-
       <div className="form-header">
-        <h2 className="form-title">Reserve your spot</h2>
-        <p className="form-subtitle">Free to attend — just let us know you're coming.</p>
+        <h2 className="form-title">Join the coalition</h2>
+        <p className="form-subtitle">Free to join. We'll email you a link to the member portal.</p>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="signup-form">
@@ -169,10 +161,10 @@ export default function SignupForm({ onSuccess }) {
               <span className="spinner" aria-hidden="true" />
               Saving…
             </span>
-          ) : 'Reserve My Spot — May 20'}
+          ) : 'Join the coalition'}
         </button>
 
-        <p className="form-privacy">No spam, ever. Just event updates.</p>
+        <p className="form-privacy">No spam, ever. Just meeting and coalition updates.</p>
       </form>
     </div>
   )

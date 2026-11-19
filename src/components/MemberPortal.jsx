@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabase'
+import Logo, { LogoMark } from './Logo'
 
 const CATEGORY_COLORS = {
-  article: { color: '#60a5fa', bg: 'rgba(96,165,250,0.1)' },
-  tool:    { color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
-  video:   { color: '#fb923c', bg: 'rgba(251,146,60,0.1)' },
-  other:   { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' },
+  article: { color: '#1d5fd1', bg: 'rgba(96,165,250,0.1)' },
+  tool:    { color: '#6d3fd6', bg: 'rgba(167,139,250,0.1)' },
+  video:   { color: '#c2410c', bg: 'rgba(251,146,60,0.1)' },
+  other:   { color: '#5b6472', bg: 'rgba(148,163,184,0.1)' },
 }
 
 function CategoryBadge({ category }) {
@@ -49,12 +50,12 @@ function MemberLogin({ notice }) {
     return (
       <div className="page">
         <header className="site-header">
-          <Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link>
+          <Logo />
         </header>
         <main className="success-container">
           <div className="success-card">
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-              <img src="/rgvai-logo.png" alt="RGV AI Coalition" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+              <LogoMark size={72} />
             </div>
             <h1 className="success-title">Check your email</h1>
             <p className="success-body">
@@ -71,17 +72,17 @@ function MemberLogin({ notice }) {
   return (
     <div className="page">
       <header className="site-header">
-        <Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link>
+        <Logo />
       </header>
       <main className="success-container">
         <div className="admin-login-card">
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-            <img src="/rgvai-logo.png" alt="RGV AI Coalition" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', display: 'block' }} />
+            <LogoMark size={72} />
           </div>
           <div className="event-badge" style={{ marginBottom: '20px' }}>Member Portal</div>
           <h1 className="form-title" style={{ marginBottom: '6px' }}>Sign in</h1>
           <p className="form-subtitle" style={{ marginBottom: notice ? '16px' : '24px' }}>
-            Enter the email you used to RSVP and we'll send you a magic link.
+            Enter the email you joined with and we'll send you a sign-in link.
           </p>
           {notice && (
             <div className="member-notice" role="status">{notice}</div>
@@ -102,7 +103,7 @@ function MemberLogin({ notice }) {
               {error && (
                 <span className="error-msg">
                   {error === 'no-rsvp' ? (
-                    <>No RSVP found for that email. <Link to="/" style={{ color: 'inherit', textDecoration: 'underline' }}>Sign up first →</Link></>
+                    <>We couldn't find a member with that email. <Link to="/#join" style={{ color: 'inherit', textDecoration: 'underline' }}>Join first →</Link></>
                   ) : error}
                 </span>
               )}
@@ -176,7 +177,7 @@ function MemberContent({ session }) {
   if (loading) {
     return (
       <div className="page">
-        <header className="site-header"><Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link></header>
+        <header className="site-header"><Logo /></header>
         <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ color: 'var(--text-muted)' }}>Loading…</span>
         </main>
@@ -187,7 +188,7 @@ function MemberContent({ session }) {
   return (
     <div className="page">
       <header className="site-header" style={{ justifyContent: 'space-between' }}>
-        <Link to="/" className="logo-badge" style={{ textDecoration: 'none' }}>RGV AI</Link>
+        <Logo />
         <button className="admin-btn" onClick={handleSignOut} style={{ fontSize: '0.78rem' }}>
           Sign out
         </button>
@@ -233,7 +234,7 @@ function MemberContent({ session }) {
                 </div>
                 <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid var(--border)' }}>
                   {confirmed ? (
-                    <div style={{ color: '#4ade80', fontSize: '0.88rem', fontWeight: 600 }}>
+                    <div style={{ color: '#15803d', fontSize: '0.88rem', fontWeight: 600 }}>
                       ✓ You're confirmed for this meeting
                     </div>
                   ) : (
@@ -311,7 +312,7 @@ function MemberContent({ session }) {
 
           {rsvp && (
             <div className="member-card">
-              <h2 className="member-card-title">Your RSVP</h2>
+              <h2 className="member-card-title">Your details</h2>
               <div className="rsvp-info-grid">
                 <div className="rsvp-info-item">
                   <span className="event-detail-label">Name</span>

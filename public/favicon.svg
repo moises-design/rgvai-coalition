@@ -1,7 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="7" fill="#060d19"/>
-  <polygon points="16,4 26,10 26,22 16,28 6,22 6,10"
-           fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linejoin="round"/>
-  <polygon points="16,12 21,14.75 21,20.25 16,23 11,20.25 11,14.75"
-           fill="#22d3ee"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="8" y1="60" x2="58" y2="4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#1557ff"/>
+      <stop offset="0.5" stop-color="#7a4dff"/>
+      <stop offset="1" stop-color="#ff7a59"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#g)"/>
+  <path d="M17 24 L32 48 L47 24" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="32" cy="18" r="5.5" fill="#fff"/>
 </svg>

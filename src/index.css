@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@300;400;500&family=Manrope:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -6,38 +6,65 @@
   padding: 0;
 }
 
+/* Light theme. The --cyan names are kept from the old dark theme so existing
+   rules keep working; they now hold the brand blue. */
 :root {
-  --bg-deep: #050a12;
-  --bg-card: #0c1524;
-  --bg-input: #0f1d30;
-  --border: #1a3050;
-  --border-focus: #00d4ff;
-  --cyan: #00d4ff;
-  --cyan-dim: #00a8cc;
-  --cyan-glow: rgba(0, 212, 255, 0.12);
-  --cyan-glow-strong: rgba(0, 212, 255, 0.28);
-  --text-primary: #f0f6ff;
-  --text-secondary: #8aa4c2;
-  --text-muted: #4a6380;
-  --error: #ff4d6d;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+
+  --bg-deep: #fbfbfd;
+  --bg-soft: #f5f5f7;
+  --bg-card: #ffffff;
+  --card-bg: #ffffff;
+  --bg-input: #f5f5f7;
+  --border: #e2e2e7;
+  --border-focus: #0b63f6;
+  --cyan: #0b63f6;
+  --cyan-dim: #084fc7;
+  --cyan-glow: rgba(11, 99, 246, 0.14);
+  --cyan-glow-strong: rgba(11, 99, 246, 0.28);
+  --text-primary: #1d1d1f;
+  --text-secondary: #515154;
+  --text-muted: #6e6e73;
+  --error: #c4001a;
+
+  --brand-blue: #1557ff;
+  --brand-violet: #7a4dff;
+  --brand-coral: #ff7a59;
+  --brand-gradient: linear-gradient(100deg, var(--brand-blue) 0%, var(--brand-violet) 52%, var(--brand-coral) 100%);
+
+  --shadow-card: 0 1px 2px rgba(17, 24, 39, 0.04), 0 12px 32px rgba(17, 24, 39, 0.07);
+  --shadow-lift: 0 2px 4px rgba(17, 24, 39, 0.05), 0 24px 56px rgba(17, 24, 39, 0.12);
 }
 
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  scroll-padding-top: 76px;
 }
 
 body {
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: var(--font-sans);
   background-color: var(--bg-deep);
   color: var(--text-primary);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

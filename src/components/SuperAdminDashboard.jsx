@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import ConfirmModal from './ConfirmModal'
+import Logo from './Logo'
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 function formatDate(iso) {
@@ -9,9 +10,9 @@ function formatDate(iso) {
 }
 
 const ROLE_COLORS = {
-  member:      { color: '#8aa4c2', border: 'rgba(138,164,194,0.3)' },
-  admin:       { color: '#f0b429', border: 'rgba(240,180,41,0.3)' },
-  super_admin: { color: '#a78bfa', border: 'rgba(167,139,250,0.3)' },
+  member:      { color: '#5b6472', border: 'rgba(138,164,194,0.3)' },
+  admin:       { color: '#9a5b00', border: 'rgba(240,180,41,0.3)' },
+  super_admin: { color: '#6d3fd6', border: 'rgba(167,139,250,0.3)' },
 }
 
 function RoleBadge({ role }) {
@@ -27,10 +28,10 @@ function RoleBadge({ role }) {
 }
 
 const CATEGORY_COLORS = {
-  article: { color: '#60a5fa', bg: 'rgba(96,165,250,0.1)' },
-  tool:    { color: '#a78bfa', bg: 'rgba(167,139,250,0.1)' },
-  video:   { color: '#fb923c', bg: 'rgba(251,146,60,0.1)' },
-  other:   { color: '#94a3b8', bg: 'rgba(148,163,184,0.1)' },
+  article: { color: '#1d5fd1', bg: 'rgba(96,165,250,0.1)' },
+  tool:    { color: '#6d3fd6', bg: 'rgba(167,139,250,0.1)' },
+  video:   { color: '#c2410c', bg: 'rgba(251,146,60,0.1)' },
+  other:   { color: '#5b6472', bg: 'rgba(148,163,184,0.1)' },
 }
 
 function CategoryBadge({ category }) {
@@ -262,7 +263,7 @@ function AnalyticsTab() {
         </div>
         <div style={statStyle}>
           <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Growth Rate</p>
-          <p style={{ margin: '8px 0 0', fontSize: '2rem', fontWeight: 800, color: growthRate > 0 ? '#4ade80' : growthRate < 0 ? 'var(--error)' : 'var(--cyan)' }}>
+          <p style={{ margin: '8px 0 0', fontSize: '2rem', fontWeight: 800, color: growthRate > 0 ? '#15803d' : growthRate < 0 ? 'var(--error)' : 'var(--cyan)' }}>
             {growthRate === null ? 'N/A' : `${growthRate > 0 ? '+' : ''}${growthRate}%`}
           </p>
         </div>
@@ -419,7 +420,7 @@ function CommunicationsTab({ token }) {
             </button>
           </form>
 
-          <div style={{ marginTop: '32px', padding: '20px', background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.15)', borderRadius: '8px' }}>
+          <div style={{ marginTop: '32px', padding: '20px', background: 'rgba(11,99,246,0.04)', border: '1px solid rgba(11,99,246,0.15)', borderRadius: '8px' }}>
             <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>Email Blast</h3>
             <div className="field-group" style={{ marginBottom: '16px' }}>
               <label className="field-label">Send to</label>
@@ -542,7 +543,7 @@ function MeetingsTab({ token }) {
               <label className="field-label" htmlFor="m-date">Date</label>
               <input id="m-date" className="field-input" value={form.event_date}
                 onChange={e => setForm(p => ({ ...p, event_date: e.target.value }))}
-                placeholder="Wednesday, May 20, 2026" />
+                placeholder="Weekday, Month Day, Year" />
             </div>
             <div className="field-group">
               <label className="field-label" htmlFor="m-time">Time</label>
@@ -622,7 +623,7 @@ function MeetingsTab({ token }) {
         ) : (
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {confirmations.map(c => (
-              <div key={c.id} style={{ padding: '6px 12px', background: 'rgba(34,211,238,0.06)', border: '1px solid rgba(34,211,238,0.2)', borderRadius: '6px' }}>
+              <div key={c.id} style={{ padding: '6px 12px', background: 'rgba(11,99,246,0.06)', border: '1px solid rgba(11,99,246,0.2)', borderRadius: '6px' }}>
                 <span style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>{c.rsvps?.name}</span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginLeft: '8px' }}>{c.rsvps?.email}</span>
               </div>
@@ -776,7 +777,7 @@ export default function SuperAdminDashboard({ token }) {
   return (
     <div className="page">
       <header className="site-header" style={{ justifyContent: 'space-between' }}>
-        <span className="logo-badge">RGV AI</span>
+        <Logo />
         <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Super Admin</span>
       </header>
 

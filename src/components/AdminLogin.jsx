@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Logo from './Logo'
 
 export default function AdminLogin({ onLogin }) {
   const [password, setPassword] = useState('')
@@ -27,7 +28,7 @@ export default function AdminLogin({ onLogin }) {
   return (
     <div className="page">
       <header className="site-header">
-        <span className="logo-badge">RGV AI</span>
+        <Logo />
       </header>
       <main className="success-container">
         <div className="admin-login-card">
