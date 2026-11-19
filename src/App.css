@@ -1728,3 +1728,109 @@
   background: #ffffff;
   border-color: rgba(42, 80, 116, 0.3);
 }
+
+/* ── AI for Healthcare: "Your clinic" box and filled-in prompt values ── */
+.afh-clinic {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px 20px;
+}
+
+.afh-clinic-anchor {
+  margin-bottom: 32px;
+  scroll-margin-top: 16px;
+}
+
+.afh-clinic-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.afh-clinic-title {
+  font-family: 'Manrope', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.afh-clinic-clear {
+  min-height: 32px;
+  padding: 4px 10px;
+  border: none;
+  background: none;
+  color: var(--cyan);
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.afh-clinic-clear:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.afh-clinic-lead {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+  max-width: 760px;
+}
+
+.afh-clinic-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.afh-companion-note {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.afh-clinic-status {
+  margin-top: 14px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.afh-clinic-status a {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.afh-fill {
+  border-radius: 4px;
+  padding: 0 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.afh-fill-own {
+  background: #cfe6d6;
+  color: #143d24;
+  font-weight: 500;
+}
+
+.afh-fill-sample {
+  background: #dfe6f1;
+  color: var(--cyan-dim);
+}
+
+@media (max-width: 900px) {
+  .afh-clinic-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .afh-clinic-fields {
+    grid-template-columns: 1fr;
+  }
+}

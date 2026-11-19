@@ -42,3 +42,4 @@ Before each release, and whenever a vendor, form, price or AI feature changes: c
 ## Decisions log
 - Nov 18, 2026: `/ai-for-healthcare` hosts the AI Front Desk workshop deck. The address and its `#laptops` / `#slide-N` links are printed on QR codes (`public/ai-for-healthcare/qr-laptops.png`), so do not rename the route or renumber the slides without reissuing the QR code.
 - Nov 18, 2026: The "Book your front desk review" form (`api/front-desk-review.js`, table `front_desk_review_requests`) collects clinic business contact details only. It must never ask for patient information.
+- Nov 19, 2026: On `/ai-for-healthcare` the copyable prompts use sample clinic values (or the visitor's own, typed into the "Your clinic" box and kept only in their browser) instead of the slides' [brackets], so the page text intentionally differs from the slide images. The take-home scripts keep [date] and [time] brackets.
