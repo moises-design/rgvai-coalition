@@ -107,6 +107,7 @@ function MembersTab({ token }) {
         onCancel={() => setRemoveTarget(null)}
         sending={removing}
         message={`Remove ${removeTarget} from the member list? This cannot be undone.`}
+        title="Remove member?"
         confirmLabel="Remove"
       />
 
@@ -323,6 +324,7 @@ function CommunicationsTab({ token }) {
 
   const [targetRole, setTargetRole] = useState('all')
   const [blastCount, setBlastCount] = useState(null)
+  const [blastMeeting, setBlastMeeting] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
   const [sending, setSending] = useState(false)
   const [sendResult, setSendResult] = useState(null)
@@ -363,8 +365,12 @@ function CommunicationsTab({ token }) {
   async function openBlastModal() {
     let query = supabase.from('rsvps').select('email', { count: 'exact', head: true })
     if (targetRole !== 'all') query = query.eq('role', targetRole)
-    const { count } = await query
+    const [{ count }, { data: meeting }] = await Promise.all([
+      query,
+      supabase.from('meeting_details').select('*').eq('id', 1).single(),
+    ])
     setBlastCount(count || 0)
+    setBlastMeeting(meeting || null)
     setSendResult(null)
     setModalOpen(true)
   }
@@ -387,6 +393,7 @@ function CommunicationsTab({ token }) {
       <ConfirmModal
         isOpen={modalOpen}
         count={blastCount}
+        meeting={blastMeeting}
         onConfirm={handleSend}
         onCancel={() => setModalOpen(false)}
         sending={sending}
@@ -435,8 +442,10 @@ function CommunicationsTab({ token }) {
               </div>
             </div>
             {sendResult && (
-              <div className={sendResult.failed > 0 ? 'server-error' : 'send-success'} role="status" style={{ marginBottom: '12px' }}>
-                {sendResult.failed === 0
+              <div className={sendResult.error || sendResult.failed > 0 ? 'server-error' : 'send-success'} role="status" style={{ marginBottom: '12px' }}>
+                {sendResult.error
+                  ? sendResult.error
+                  : sendResult.failed === 0
                   ? `✓ Sent to ${sendResult.sent} recipient${sendResult.sent !== 1 ? 's' : ''}.`
                   : `Sent ${sendResult.sent} · Failed ${sendResult.failed}`}
               </div>
