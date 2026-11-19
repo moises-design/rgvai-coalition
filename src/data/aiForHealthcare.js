@@ -5,11 +5,11 @@
 export const DECK_PDF = '/ai-for-healthcare/ai-front-desk-healthcare-deck.pdf'
 
 // Rich Gomez's public contact details for the "Book your front desk review"
-// section. Left empty until Moises supplies them; empty values are not shown.
+// section, supplied by Moises on Nov 19, 2026. Empty values are not shown.
 export const RICH_CONTACT = {
   name: 'Rich Gomez',
-  email: '',
-  phone: '',
+  email: 'richard+med@rebelleads.com',
+  phone: '956-777-4567',
 }
 
 export const SLIDES = [
