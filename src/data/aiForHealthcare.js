@@ -31,6 +31,7 @@ export const SLIDES = [
   { title: 'Try it now, prompt 2: find your worst no-show day' },
   { title: 'Try it now, prompt 3: draft a bilingual service flyer' },
   { title: 'Try it now, prompt 4: a safe starter for any front desk task' },
+  { title: 'One more thing: let AI build your survey form' },
   { title: 'Doing it yourself is doable. Here is the real workload.' },
   { title: 'Done for you: we build it, run the pilot, and prove it' },
   { title: 'Let your front desk breathe again' },
@@ -41,7 +42,8 @@ export const SLIDES = [
 }))
 
 export const LAPTOPS_SLIDE = 12
-export const BOOK_SLIDE = 19
+export const FORM_SLIDE = 17
+export const BOOK_SLIDE = 20
 
 export const JUMP_LINKS = [
   { slide: 1, label: 'Start' },
@@ -51,6 +53,7 @@ export const JUMP_LINKS = [
   { slide: 14, label: 'Prompt 2' },
   { slide: 15, label: 'Prompt 3' },
   { slide: 16, label: 'Prompt 4' },
+  { slide: FORM_SLIDE, label: 'Survey form' },
   { slide: BOOK_SLIDE, label: 'Book a review' },
 ]
 
@@ -92,6 +95,32 @@ export const PROMPTS = [
     next: 'Change only the task sentence, for example a no-show follow-up call script or a holiday closure notice, and run it again.',
   },
 ]
+
+// Slide 17: a demo, not a fifth hands-on prompt. The presenter builds the form
+// once on screen; attendees copy the prompt and try it back at the office.
+// The example is a staff survey on purpose: it involves no patient information.
+export const FORM_DEMO = {
+  id: 'survey-form',
+  slide: FORM_SLIDE,
+  title: 'Staff survey: what slows down our front desk?',
+  lead: 'Stop building forms one question at a time. Describe the survey and let AI draft it. Start with your own staff.',
+  text: 'Create a short anonymous staff survey for the front desk team at {{clinic}}. Title it “What slows down our front desk?” Do not ask for names and do not collect email addresses. Question 1, multiple choice, required: Which task takes the most of your day? Choices: phones, check-in, scheduling, reminder calls, billing questions, refill requests, other. Question 2, scale from 1 (rarely) to 5 (all day): How often do calls go to voicemail because everyone is busy? Question 3, short answer: Which task would you hand off first if you could? Question 4, paragraph: What is one thing that would make your day easier? Do not ask about patients. If you cannot create the form yourself, write out the questions and choices so I can paste them into a form.',
+  steps: [
+    {
+      title: 'Any AI tool writes the questions',
+      body: 'Paste the prompt into the tool your office has approved. You get the questions and answer choices back in about a minute.',
+    },
+    {
+      title: 'In Google Forms, Gemini builds the form',
+      body: 'Go to forms.google.com, start a blank form, choose “Help me create a form”, and paste the same prompt. Your Google account needs Gemini features for this.',
+    },
+    {
+      title: 'Link it to a sheet and share the link',
+      body: 'In the Responses tab choose “Link to Sheets”, then send the form link to your team. Every answer lands in the sheet.',
+    },
+  ],
+  note: 'Thinking of a patient survey next? Keep it anonymous: no names, birth dates, or visit details. Google’s HIPAA agreement is only for paid Google Workspace accounts, so never collect anything that identifies a patient in a free Gmail account. Texting a survey link needs the patient’s consent to be texted.',
+}
 
 export const REMINDER_TEXTS = [
   {

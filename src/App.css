@@ -1713,6 +1713,37 @@
   }
 }
 
+.afh-steps {
+  margin: 16px 0 0;
+  padding-left: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.afh-steps strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.afh-caution {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--afh-teal, var(--cyan));
+  border-radius: 0 8px 8px 0;
+  background: var(--afh-pale, var(--bg-soft));
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.afh-companion .afh-caution {
+  background: #ffffff;
+}
+
 /* ── Privacy policy ── */
 .privacy-hero {
   margin-bottom: 48px;

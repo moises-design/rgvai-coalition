@@ -8,7 +8,7 @@ Needs:  python-pptx, node, LibreOffice (soffice), poppler (pdftoppm), and the
         Manrope and Inter fonts installed, or the rendered slides will not
         match the design.
 
-Slide text for slides 9, 10 and 12 to 16 comes from the data file; the other
+Slide text for slides 9, 10 and 12 to 17 comes from the data file; the other
 slides' text lives in this script. The cover photo (with its baked-in title)
 and the two slide photos are in scripts/deck-assets/.
 """
@@ -35,6 +35,7 @@ const fill = (t, m) => d.fillTemplate(t, {}, m, process.argv[1]).map(s => s.text
 console.log(JSON.stringify({ titles: d.SLIDES.map(s => s.title), steps: d.LAPTOPS_STEPS,
   prompts: d.PROMPTS.map(p => ({ slide: p.slide, lead: p.lead, text: fill(p.text, 'sample'), check: p.check, next: p.next })),
   reminders: d.REMINDER_TEXTS.map(r => ({ title: r.title, text: fill(r.text, 'bracket') })), reminderNote: d.REMINDER_NOTE,
+  form: { ...d.FORM_DEMO, text: fill(d.FORM_DEMO.text, 'sample') },
   scripts: d.FRONT_DESK_SCRIPTS.map(r => ({ title: r.title, text: fill(r.text, 'bracket'), note: r.note })) }));
 """
 D = json.loads(subprocess.run(['node', '--input-type=module', '-e', DUMP, SAMPLE_DATE], cwd=ROOT, check=True, capture_output=True, text=True).stdout)
@@ -225,21 +226,37 @@ for p in D['prompts']:
     text(s, LEFT + 0.33, top, WIDTH - 0.66, h, [dict(text='“' + p['text'] + '”', size=15, line=1.4)], anchor='middle', name='Prompt')
     text(s, LEFT, top + h + 0.28, WIDTH, 0.9, [dict(runs=[('Check it: ', dict(bold=True, color=NAVY)), (p['check'] + ' ', {}), ('Try next: ', dict(bold=True, color=NAVY)), (p['next'], {})], size=13, color=BODY, line=1.4)])
 
-# 17 do it yourself
-s = new_slide(T[16]); title(s, T[16], 0.5)
+# 17 one more thing: a staff survey form (demo, not hands-on)
+F = D['form']
+s = new_slide(notes_for(17, F['lead'] + '\n\n' + F['text'] + '\n\n' + '\n'.join(f"{i}. {st['title']}: {st['body']}" for i, st in enumerate(F['steps'], 1)) + '\n\n' + F['note']))
+title(s, T[16], 0.5, h=0.8)
+text(s, LEFT, 1.38, WIDTH, 0.5, [dict(text=F['lead'], size=17, color=BODY, line=1.25)])
+card(s, LEFT, 1.98, 6.55, 3.98, CARD)
+text(s, LEFT + 0.3, 1.98, 5.95, 3.98, [dict(text='“' + F['text'] + '”', size=13, line=1.33)], anchor='middle', name='Prompt')
+y = 2.02
+for i, st in enumerate(F['steps'], 1):
+    text(s, 7.5, y - 0.03, 0.55, 0.6, [dict(text=str(i), font=HEAD, bold=True, size=30, color=TEAL, line=1.0)])
+    text(s, 8.12, y, 4.64, 1.35, [dict(text=st['title'], font=HEAD, bold=True, size=17, color=INK, after=3, line=1.15),
+                                    dict(text=st['body'], size=13, color=BODY, line=1.3)])
+    y += 1.34
+card(s, LEFT, 6.12, WIDTH, 1.08, PALE, radius=0.16)
+text(s, LEFT + 0.28, 6.12, WIDTH - 0.56, 1.08, [dict(text=F['note'], size=13, color=INK, line=1.25)], anchor='middle')
+
+# 18 do it yourself
+s = new_slide(T[17]); title(s, T[17], 0.5)
 numbered(s, [('Pick an approved tool first', 'No real patient information in a consumer AI tool. Your setup needs the right contract and covered features in place before any real workflow connects.'),
     ('Write every script yourself', 'Reminders, call routing, and review replies, in English and Spanish, with your manager confirming every policy detail: identity checks, documentation, transfers, and after-hours handling.'),
     ('Connect it, then test it', 'Scheduling, phones, and permissions wired together, tested on sample data, with every draft checked, because a confident answer can still be wrong.'),
     ('Run it and review it, every week', 'Handoffs, exceptions, and edits handled by your team, results and staff time measured, and the Texas AI disclosure kept up front. None of it is magic. It is setup, checking, and upkeep.')], 2.05, 1.32)
 
-# 18 done for you
-s = new_slide(T[17]); title(s, T[17], 0.9)
+# 19 done for you
+s = new_slide(T[18]); title(s, T[18], 0.9)
 numbered(s, [('We map your first workflow', 'Pick the one that hurts most: missed calls, reminders, or billing follow-up. We map your current time, rework, and owner, so the pilot starts from your real numbers.'),
     ('We build the whole stack', 'The AI front desk configured on your rules, your reminder sequence and call routing scripts written for your clinic in English and Spanish, the Texas disclosure set up, and your team reviewing before anything goes live.'),
     ('We measure, then you decide', 'We compare no-shows, filled slots, staff time, and follow-up completed. If it earns its keep, we expand to the next workflow. If it does not, you stop with the numbers in hand.')], 2.6, 1.35)
 
-# 19 close
-s = new_slide(T[18]); title(s, T[18], 1.75, size=44, w=8.6, x=2.37, align='center', h=1.5)
+# 20 close
+s = new_slide(T[19]); title(s, T[19], 1.75, size=44, w=8.6, x=2.37, align='center', h=1.5)
 text(s, 2.37, 3.42, 8.6, 1.3, [dict(text='Every call answered. Every appointment reminded. Every follow-up done. Book a short front desk review and we will map your first pilot workflow together.', size=19, color=BODY, align='center', line=1.4)])
 btn = card(s, 4.67, 5.15, 4.0, 0.74, NAVY, radius=0.37)
 LINK = 'https://rgvaicoalition.com/ai-for-healthcare#book'
