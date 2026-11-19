@@ -19,6 +19,8 @@ export const RICH_CONTACT = {
 export const SLIDES = [
   { title: 'AI Front Desk Automation for Healthcare' },
   { title: 'Two backgrounds. One front desk problem we both know firsthand.' },
+  { title: 'What do you use AI for?' },
+  { title: 'Medical offices and clinics?' },
   { title: 'Your front desk is drowning in work that never stops' },
   { title: 'Missed calls and missed follow-up cost real money' },
   { title: 'An AI front desk that answers, books, and follows up' },
@@ -43,18 +45,18 @@ export const SLIDES = [
   src: `/ai-for-healthcare/slide-${String(i + 1).padStart(2, '0')}.jpg`,
 }))
 
-export const LAPTOPS_SLIDE = 12
-export const FORM_SLIDE = 17
-export const BOOK_SLIDE = 20
+export const LAPTOPS_SLIDE = 14
+export const FORM_SLIDE = 19
+export const BOOK_SLIDE = 22
 
 export const JUMP_LINKS = [
   { slide: 1, label: 'Start' },
-  { slide: 9, label: 'Take-home scripts' },
+  { slide: 11, label: 'Take-home scripts' },
   { slide: LAPTOPS_SLIDE, label: 'Laptops out' },
-  { slide: 13, label: 'Prompt 1' },
-  { slide: 14, label: 'Prompt 2' },
-  { slide: 15, label: 'Prompt 3' },
-  { slide: 16, label: 'Prompt 4' },
+  { slide: 15, label: 'Prompt 1' },
+  { slide: 16, label: 'Prompt 2' },
+  { slide: 17, label: 'Prompt 3' },
+  { slide: 18, label: 'Prompt 4' },
   { slide: FORM_SLIDE, label: 'Survey form' },
   { slide: BOOK_SLIDE, label: 'Book a review' },
 ]
@@ -62,7 +64,7 @@ export const JUMP_LINKS = [
 export const PROMPTS = [
   {
     id: 'prompt-1',
-    slide: 13,
+    slide: 15,
     title: 'Prompt 1: build your reminder sequence',
     short: 'Draft three text reminders for one appointment: 7 days before, 2 days before, and the morning of. Under 160 characters each.',
     shortCheck: 'Count the characters.',
@@ -73,7 +75,7 @@ export const PROMPTS = [
   },
   {
     id: 'prompt-2',
-    slide: 14,
+    slide: 16,
     title: 'Prompt 2: find your worst no-show day',
     short: 'Here is one month of no-shows by weekday. Calculate each day’s rate, rank the days, and propose a two-week reminder pilot.',
     shortCheck: 'Redo the math: 58 ÷ 420 = 13.8%.',
@@ -84,7 +86,7 @@ export const PROMPTS = [
   },
   {
     id: 'prompt-3',
-    slide: 15,
+    slide: 17,
     title: 'Prompt 3: draft a bilingual service flyer',
     short: 'Write a service flyer in English, then Spanish. Under 80 words each. Use only these facts.',
     shortCheck: 'Read the Spanish out loud.',
@@ -95,7 +97,7 @@ export const PROMPTS = [
   },
   {
     id: 'prompt-4',
-    slide: 16,
+    slide: 18,
     title: 'Prompt 4: a safe starter for any front desk task',
     short: 'My task: write an after-hours voicemail greeting. Use only the facts I give you. No patient information. Ask me instead of guessing.',
     shortCheck: 'Did it add anything you never supplied?',
@@ -106,7 +108,7 @@ export const PROMPTS = [
   },
 ]
 
-// Slide 17: a demo, not a fifth hands-on prompt. The presenter builds the form
+// Slide 19: a demo, not a fifth hands-on prompt. The presenter builds the form
 // once on screen; attendees copy the prompt and try it back at the office.
 // The example is a staff survey on purpose: it involves no patient information.
 export const FORM_DEMO = {
@@ -137,19 +139,19 @@ export const FORM_DEMO = {
 export const REMINDER_TEXTS = [
   {
     id: 'reminder-7',
-    slide: 9,
+    slide: 11,
     title: 'Seven days before',
     text: '{{Clinic}} reminder: Your appointment is [date] at [time]. Need to change it? Call {{officePhone}}.',
   },
   {
     id: 'reminder-2',
-    slide: 9,
+    slide: 11,
     title: 'Two days before',
     text: '{{Clinic}}: Your appointment is [date] at [time]. For changes, call {{officePhone}}.',
   },
   {
     id: 'reminder-0',
-    slide: 9,
+    slide: 11,
     title: 'Morning of the visit',
     text: '{{Clinic}}: Appointment today at [time]. Need a change? Call {{officePhone}}.',
   },
@@ -164,7 +166,7 @@ export const REMINDER_NOTE =
 export const FRONT_DESK_SCRIPTS = [
   {
     id: 'script-opening',
-    slide: 10,
+    slide: 12,
     title: 'Every call, the opening',
     text: 'Thank you for calling {{clinic}}. How can I help?',
     note: 'For scheduling, ask: “Are you calling to schedule or change an appointment?” Then offer only slots the system actually shows.',
@@ -172,7 +174,7 @@ export const FRONT_DESK_SCRIPTS = [
   },
   {
     id: 'script-refill',
-    slide: 10,
+    slide: 12,
     title: 'Refill requests',
     text: 'Are you calling about a medication refill request? I can route your request to our clinical team. They handle refill decisions.',
     note: 'The front desk never approves medication or promises a completion time.',
@@ -180,7 +182,7 @@ export const FRONT_DESK_SCRIPTS = [
   },
   {
     id: 'script-billing',
-    slide: 10,
+    slide: 12,
     title: 'Billing questions',
     text: 'Is your question about a statement or insurance payment? I can route your question to our billing coordinator.',
     note: 'The front desk never guarantees insurance payment.',
@@ -188,7 +190,7 @@ export const FRONT_DESK_SCRIPTS = [
   },
   {
     id: 'script-review',
-    slide: 10,
+    slide: 12,
     title: 'A public review reply',
     text: 'Thank you for sharing this concern. Clear communication matters to our team. Please contact our office manager at {{officePhone}} so we can listen and address your feedback privately.',
     note: 'Never confirm the reviewer was a patient.',
@@ -255,7 +257,7 @@ export function fillTemplate(template, clinic, mode, sampleDate) {
   })
 }
 
-// Slide 12 ("Laptops out") steps, used to rebuild that slide in the deck.
+// The "Laptops out" slide's steps, used to rebuild that slide in the deck.
 export const LAPTOPS_STEPS = [
   {
     title: 'Open your approved AI tool',

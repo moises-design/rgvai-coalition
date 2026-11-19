@@ -23,7 +23,7 @@ import {
 
 const TOTAL = SLIDES.length
 
-// #laptops and #slide-12 both open the "Laptops out" slide; other hashes
+// #laptops opens the "Laptops out" slide whatever its number; other hashes
 // (#prompts, #book) are ordinary in-page anchors.
 function slideFromHash(hash) {
   if (hash === '#laptops') return LAPTOPS_SLIDE
