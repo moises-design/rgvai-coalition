@@ -542,6 +542,58 @@
   }
 }
 
+/* ── Showcase and Support pages ── */
+.sc-by {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.sc-note {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.sc-note a {
+  color: var(--cyan);
+}
+
+.sc-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.sc-send {
+  justify-self: start;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sc-send:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.sc-again {
+  margin-top: 16px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.sc-trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.ws-card .ws-link {
+  overflow-wrap: anywhere;
+}
+
 /* `clip` (not `hidden`) so the sticky header keeps working. */
 .page {
   overflow-x: clip;

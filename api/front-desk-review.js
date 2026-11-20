@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
+import { clientIp, overLimit, recordHit } from './_guard.js'
 
 // Receives "Book your front desk review" requests from /ai-for-healthcare.
 // Stores the request in Supabase, then emails a notification to the address in
@@ -89,6 +90,13 @@ export default async function handler(req, res) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(request.email)) {
     return res.status(400).json({ error: 'A valid email is required' })
   }
+
+  // At most 5 requests an hour from one network address.
+  const ip = clientIp(req)
+  if (await overLimit(supabase, 'review', ip, 5, 3600)) {
+    return res.status(429).json({ error: 'Too many requests from this network. Please try again in an hour, or email hello@rgvaicoalition.com.' })
+  }
+  await recordHit(supabase, 'review', ip)
 
   const { error: insertError } = await supabase.from('front_desk_review_requests').insert([{
     name: request.name,

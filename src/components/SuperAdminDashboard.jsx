@@ -885,8 +885,112 @@ function InterestsTab({ token }) {
   )
 }
 
+// ── Showcase Tab (review "Show what you built" entries) ──────────────────────
+function ShowcaseTab({ token }) {
+  const [entries, setEntries] = useState(null)
+  const [error, setError] = useState('')
+  const [busy, setBusy] = useState('')
+
+  async function load() {
+    try {
+      const res = await fetch('/api/showcase', { headers: { 'x-superadmin-token': token } })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) { setError(body.error || 'Could not load the entries.'); return }
+      setEntries(body.open === false ? false : body.entries)
+    } catch {
+      setError('Could not load the entries.')
+    }
+  }
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/showcase', { headers: { 'x-superadmin-token': token } })
+      .then(async res => {
+        const body = await res.json().catch(() => ({}))
+        if (!active) return
+        if (!res.ok) setError(body.error || 'Could not load the entries.')
+        else setEntries(body.open === false ? false : body.entries)
+      })
+      .catch(() => { if (active) setError('Could not load the entries.') })
+    return () => { active = false }
+  }, [token])
+
+  async function act(method, id, status) {
+    setBusy(id)
+    setError('')
+    try {
+      const res = await fetch('/api/showcase', {
+        method,
+        headers: { 'Content-Type': 'application/json', 'x-superadmin-token': token },
+        body: JSON.stringify({ id, status }),
+      })
+      if (!res.ok) setError((await res.json().catch(() => ({}))).error || 'That did not work.')
+    } catch {
+      setError('That did not work.')
+    }
+    await load()
+    setBusy('')
+  }
+
+  const muted = { color: 'var(--text-muted)', fontSize: '0.9rem' }
+  if (entries === null && !error) return <p style={muted}>Loading…</p>
+  if (entries === false) {
+    return <p style={muted}>The showcase is not open yet. Its database table has not been added.</p>
+  }
+  const list = entries || []
+  const waiting = list.filter(entry => entry.status === 'pending').length
+  const safe = url => (/^https:\/\//.test(url) ? url : undefined)
+
+  return (
+    <>
+      <p style={{ ...muted, marginBottom: '16px' }}>
+        {waiting} waiting for review, {list.filter(entry => entry.status === 'approved').length} showing on the site.
+        Open each link before you approve it. Nothing appears publicly until you do.
+      </p>
+      {error && <div className="server-error" role="alert">{error}</div>}
+      {list.length === 0 ? <p style={muted}>No entries yet.</p> : (
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr><th>Project</th><th>From</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              {list.map(entry => (
+                <tr key={entry.id}>
+                  <td>
+                    <strong>{entry.title}</strong>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{entry.blurb}</div>
+                    <a href={safe(entry.url)} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', wordBreak: 'break-all' }}>{entry.url}</a>
+                  </td>
+                  <td>
+                    {entry.builder_name || '—'}
+                    {entry.email && <div style={{ fontSize: '0.8rem' }}><a href={`mailto:${entry.email}`}>{entry.email}</a></div>}
+                  </td>
+                  <td>{entry.status === 'approved' ? 'Showing' : entry.status === 'hidden' ? 'Hidden' : 'Waiting'}</td>
+                  <td>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {entry.status !== 'approved' && (
+                        <button className="admin-btn" disabled={busy === entry.id} onClick={() => act('PATCH', entry.id, 'approved')}>Approve</button>
+                      )}
+                      {entry.status === 'approved' && (
+                        <button className="admin-btn" disabled={busy === entry.id} onClick={() => act('PATCH', entry.id, 'hidden')}>Hide</button>
+                      )}
+                      <button className="admin-btn" disabled={busy === entry.id} style={{ color: 'var(--error)' }}
+                        onClick={() => { if (window.confirm(`Delete "${entry.title}" for good?`)) act('DELETE', entry.id) }}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
+  )
+}
+
 // ── Main Dashboard ────────────────────────────────────────────────────────────
-const TABS = ['Members', 'Analytics', 'Communications', 'Meetings', 'Resources', 'Interests']
+const TABS = ['Members', 'Analytics', 'Communications', 'Meetings', 'Resources', 'Interests', 'Showcase']
 
 export default function SuperAdminDashboard({ token }) {
   const [activeTab, setActiveTab] = useState('Members')
@@ -918,6 +1022,7 @@ export default function SuperAdminDashboard({ token }) {
           {activeTab === 'Meetings'       && <MeetingsTab token={token} />}
           {activeTab === 'Resources'      && <ResourcesTab token={token} />}
           {activeTab === 'Interests'      && <InterestsTab token={token} />}
+          {activeTab === 'Showcase'       && <ShowcaseTab token={token} />}
         </div>
       </main>
 

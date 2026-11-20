@@ -14,6 +14,8 @@ import UnsubscribePage from './components/UnsubscribePage'
 import AiForSmallBusinessPage from './components/AiForSmallBusinessPage'
 import AiForNonprofitsPage from './components/AiForNonprofitsPage'
 import LearnPage from './components/LearnPage'
+import ShowcasePage from './components/ShowcasePage'
+import SupportPage from './components/SupportPage'
 import './App.css'
 import './theme.css'
 import './home.css'
@@ -47,6 +49,8 @@ export default function App() {
         <Route path="/ai-for-small-business" element={<AiForSmallBusinessPage />} />
         <Route path="/ai-for-nonprofits" element={<AiForNonprofitsPage />} />
         <Route path="/learn" element={<LearnPage />} />
+        <Route path="/showcase" element={<ShowcasePage />} />
+        <Route path="/support" element={<SupportPage />} />
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />

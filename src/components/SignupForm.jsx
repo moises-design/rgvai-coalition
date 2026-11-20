@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../supabase'
 
 const AI_TOOLS = [
   'ChatGPT', 'Claude', 'Gemini', 'Copilot', 'Grok',
@@ -46,20 +45,26 @@ export default function SignupForm({ onSuccess }) {
     }
     setSubmitting(true)
     setServerError('')
-    const { error } = await supabase.from('rsvps').insert([{
-      name: form.name.trim(),
-      email: form.email.trim().toLowerCase(),
-      phone: form.phone.trim() || null,
-      ai_primary: form.ai_primary,
-      ai_secondary: form.ai_secondary || null,
-    }])
-    setSubmitting(false)
-    if (error) {
-      if (error.code === '23505') {
-        setServerError('This email is already a member. Use Member login to get a new portal link.')
-      } else {
-        setServerError('Something went wrong. Please try again.')
-      }
+    let res
+    try {
+      res = await fetch('/api/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim().toLowerCase(),
+          phone: form.phone.trim(),
+          ai_primary: form.ai_primary,
+          ai_secondary: form.ai_secondary,
+        }),
+      })
+    } catch {
+      res = null
+    }
+    if (!res?.ok) {
+      const data = res ? await res.json().catch(() => ({})) : {}
+      setSubmitting(false)
+      setServerError(data.error || 'Something went wrong. Please try again.')
       return
     }
     await fetch('/api/send-magic-link', {
@@ -67,6 +72,7 @@ export default function SignupForm({ onSuccess }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: form.email.trim().toLowerCase() }),
     })
+    setSubmitting(false)
     onSuccess({ name: form.name, email: form.email })
   }
 
