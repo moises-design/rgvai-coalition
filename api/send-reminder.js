@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildReminderEmail, meetingHasPassed, reminderSubject } from './_email.js'
+import { ADMIN, SUPER, requireAdmin, unsubscribeHeaders, unsubscribeLinks } from './_guard.js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
@@ -8,16 +9,11 @@ const supabase = createClient(
 )
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-function isAuthorized(req) {
-  const token = req.headers['x-admin-token']
-  return token === process.env.ADMIN_PASSWORD || token === process.env.SUPER_ADMIN_PASSWORD
-}
-
 const EMAIL_FROM = 'RGV AI Coalition <hello@rgvaicoalition.com>'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
-  if (!isAuthorized(req)) return res.status(401).json({ error: 'Unauthorized' })
+  if (!await requireAdmin(supabase, req, res, 'x-admin-token', [ADMIN(), SUPER()])) return
 
   const { targetRole } = req.body || {}
 
@@ -30,19 +26,34 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: `The saved meeting (${meeting.event_date}) has already passed. Update it in the Meetings tab first.` })
   }
 
-  let query = supabase.from('rsvps').select('name, email, role')
-  if (targetRole && targetRole !== 'all') query = query.eq('role', targetRole)
-
-  const { data: rsvps, error: fetchError } = await query
+  const load = columns => {
+    let query = supabase.from('rsvps').select(columns)
+    if (targetRole && targetRole !== 'all') query = query.eq('role', targetRole)
+    return query
+  }
+  let { data: rsvps, error: fetchError } = await load('name, email, role, email_opt_out')
+  if (fetchError?.code === '42703') {
+    // The opt-out column is not in the database yet: nobody can have opted out.
+    ;({ data: rsvps, error: fetchError } = await load('name, email, role'))
+  }
   if (fetchError) return res.status(500).json({ error: fetchError.message })
 
+  // Members who unsubscribed are never emailed.
+  const recipients = rsvps.filter(member => !member.email_opt_out)
+
   const results = await Promise.allSettled(
-    rsvps.map(({ name, email }) =>
-      resend.emails.send({ from: EMAIL_FROM, to: email, subject: reminderSubject(meeting), html: buildReminderEmail(name, meeting) })
+    recipients.map(({ name, email }) =>
+      resend.emails.send({
+        from: EMAIL_FROM,
+        to: email,
+        subject: reminderSubject(meeting),
+        html: buildReminderEmail(name, meeting, unsubscribeLinks(email).page),
+        headers: unsubscribeHeaders(email),
+      })
     )
   )
 
-  const sent = results.filter(r => r.status === 'fulfilled').length
-  const failed = results.filter(r => r.status === 'rejected').length
-  return res.status(200).json({ sent, failed, total: rsvps.length })
+  const sent = results.filter(r => r.status === 'fulfilled' && !r.value?.error).length
+  const failed = results.length - sent
+  return res.status(200).json({ sent, failed, total: recipients.length, unsubscribed: rsvps.length - recipients.length })
 }

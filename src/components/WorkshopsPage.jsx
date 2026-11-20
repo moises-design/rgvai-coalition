@@ -54,7 +54,7 @@ export default function WorkshopsPage() {
         <section className="dl-section" aria-labelledby="series-title">
           <h2 className="dl-section-title" id="series-title">Pick your audience</h2>
           <p className="dl-section-lead">
-            Same format, different work. One workshop is ready to open today. The others we build
+            Same format, different work. Open the ones marked ready today. The others we build
             with you when you ask for them.
           </p>
           <div className="dl-card-grid ws-grid">

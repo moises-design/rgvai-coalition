@@ -3,7 +3,7 @@ import SiteHeader from './SiteHeader'
 import SiteFooter from './SiteFooter'
 
 const CONTACT_EMAIL = 'hello@rgvaicoalition.com'
-const LAST_UPDATED = 'November 19, 2026'
+const LAST_UPDATED = 'November 20, 2026'
 
 // Keep this page in step with the code. When a form, vendor or tracking tool
 // is added or changed, update the matching section here in the same PR.
@@ -17,6 +17,11 @@ const COLLECTED = [
     title: 'Member portal',
     what: 'Your email address, used to send you a sign-in link, and a record of the meetings you confirm you will attend.',
     why: 'To show you member announcements, meeting details and resources, and to plan for attendance.',
+  },
+  {
+    title: 'Keeping sign-in safe',
+    what: 'When someone asks for a sign-in link or types an admin password wrong, we keep a scrambled record of the email or network address used. It cannot be turned back into the original.',
+    why: 'To limit repeated attempts, so nobody can flood your inbox or guess a password. These records are deleted after one day.',
   },
   {
     title: 'Front desk review request',
@@ -142,6 +147,10 @@ export default function PrivacyPage() {
               We keep the information you give us until you ask us to remove it or we no longer need it.
               To see what we hold about you, correct it, or have it deleted, email{' '}
               <a className="privacy-link" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            </p>
+            <p>
+              Every meeting reminder we send has an Unsubscribe link. Using it stops the reminders and
+              keeps your membership. Sign-in links you ask for are still sent.
             </p>
           </div>
         </section>

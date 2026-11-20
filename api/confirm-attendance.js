@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { ADMIN, SUPER, requireAdmin } from './_guard.js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
@@ -13,18 +14,11 @@ async function getSessionUser(req) {
   return user
 }
 
-function isAdmin(req) {
-  const token = req.headers['x-admin-token']
-  return token === process.env.ADMIN_PASSWORD || token === process.env.SUPER_ADMIN_PASSWORD
-}
-
-function isSuperAdmin(req) {
-  return req.headers['x-superadmin-token'] === process.env.SUPER_ADMIN_PASSWORD
-}
-
 export default async function handler(req, res) {
   if (req.method === 'GET') {
-    if (isAdmin(req)) {
+    // An admin password header means the dashboard is asking for the full list.
+    if (req.headers['x-admin-token']) {
+      if (!await requireAdmin(supabase, req, res, 'x-admin-token', [ADMIN(), SUPER()])) return
       const { data, error } = await supabase
         .from('meeting_confirmations')
         .select('id, confirmed_at, rsvps(name, email)')
@@ -70,7 +64,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'DELETE') {
-    if (!isSuperAdmin(req)) return res.status(401).json({ error: 'Unauthorized' })
+    if (!await requireAdmin(supabase, req, res, 'x-superadmin-token', [SUPER()])) return
     const { error } = await supabase.from('meeting_confirmations').delete().eq('meeting_id', 1)
     if (error) return res.status(500).json({ error: error.message })
     return res.status(200).json({ reset: true })

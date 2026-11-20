@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { SUPER, requireAdmin } from './_guard.js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
@@ -6,10 +7,6 @@ const supabase = createClient(
 )
 
 const VALID_CATEGORIES = ['article', 'tool', 'video', 'other']
-
-function isSuperAdmin(req) {
-  return req.headers['x-superadmin-token'] === process.env.SUPER_ADMIN_PASSWORD
-}
 
 export default async function handler(req, res) {
   if (req.method === 'GET') {
@@ -22,7 +19,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    if (!isSuperAdmin(req)) return res.status(401).json({ error: 'Unauthorized' })
+    if (!await requireAdmin(supabase, req, res, 'x-superadmin-token', [SUPER()])) return
     const { title, url, description, category } = req.body
     if (!title?.trim() || !url?.trim()) return res.status(400).json({ error: 'Title and URL are required' })
     if (!VALID_CATEGORIES.includes(category)) return res.status(400).json({ error: 'Invalid category' })
@@ -35,7 +32,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'DELETE') {
-    if (!isSuperAdmin(req)) return res.status(401).json({ error: 'Unauthorized' })
+    if (!await requireAdmin(supabase, req, res, 'x-superadmin-token', [SUPER()])) return
     const { id } = req.query
     if (!id) return res.status(400).json({ error: 'id is required' })
     const { error } = await supabase.from('resources').delete().eq('id', id)

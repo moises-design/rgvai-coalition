@@ -22,6 +22,8 @@ export const WORKSHOPS = [
     title: 'AI for Small Business',
     audience: 'Owners and their teams',
     examples: ['Replies to customer reviews', 'A week of social posts', 'A quote follow-up'],
+    ready: true,
+    to: '/ai-for-small-business',
   },
   {
     id: 'nonprofits',
