@@ -10,6 +10,7 @@ import DigitalLiteracyPage from './components/DigitalLiteracyPage'
 import AiForHealthcarePage from './components/AiForHealthcarePage'
 import PrivacyPage from './components/PrivacyPage'
 import WorkshopsPage from './components/WorkshopsPage'
+import UnsubscribePage from './components/UnsubscribePage'
 import './App.css'
 import './theme.css'
 import './home.css'
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/ai-for-healthcare" element={<AiForHealthcarePage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
+        <Route path="/unsubscribe" element={<UnsubscribePage />} />
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildPortalLinkEmail } from './_email.js'
+import { clientIp, overLimit, recordHit } from './_guard.js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
@@ -11,16 +12,25 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { email, checkRsvp } = req.body
-  if (!email) return res.status(400).json({ error: 'Email required' })
+  const { email } = req.body || {}
+  if (!email || typeof email !== 'string') return res.status(400).json({ error: 'Email required' })
 
   const normalizedEmail = email.trim().toLowerCase()
+  const ip = clientIp(req)
 
-  if (checkRsvp) {
-    const { data: rsvp } = await supabase
-      .from('rsvps').select('email').eq('email', normalizedEmail).single()
-    if (!rsvp) return res.status(404).json({ error: 'no-rsvp' })
+  // Limits, so this route cannot be used to flood an inbox: 3 links per
+  // address and 10 requests per network address, each per 15 minutes.
+  if (await overLimit(supabase, 'link_ip', ip, 10, 15 * 60) ||
+      await overLimit(supabase, 'link_email', normalizedEmail, 3, 15 * 60)) {
+    return res.status(429).json({ error: 'Too many requests. Please wait a few minutes and try again.' })
   }
+  await recordHit(supabase, 'link_ip', ip)
+
+  // Links only ever go to people who have joined.
+  const { data: rsvp } = await supabase
+    .from('rsvps').select('email').eq('email', normalizedEmail).single()
+  if (!rsvp) return res.status(404).json({ error: 'no-rsvp' })
+  await recordHit(supabase, 'link_email', normalizedEmail)
 
   const linkRes = await fetch(`${process.env.VITE_SUPABASE_URL}/auth/v1/admin/generate_link`, {
     method: 'POST',

@@ -1,17 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
+import { ADMIN, SUPER, requireAdmin } from './_guard.js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
-function unauthorized(res) {
-  return res.status(401).json({ error: 'Unauthorized' })
-}
-
 export default async function handler(req, res) {
-  const token = req.headers['x-admin-token']
-  if (!token || (token !== process.env.ADMIN_PASSWORD && token !== process.env.SUPER_ADMIN_PASSWORD)) return unauthorized(res)
+  if (!await requireAdmin(supabase, req, res, 'x-admin-token', [ADMIN(), SUPER()])) return
 
   if (req.method === 'POST') {
     const { title, body } = req.body

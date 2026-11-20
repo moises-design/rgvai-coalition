@@ -16,7 +16,11 @@ export default function SuperAdminLogin({ onLogin }) {
       body: JSON.stringify({ password }),
     })
     setLoading(false)
-    if (!res.ok) { setError('Incorrect password.'); setPassword(''); return }
+    if (!res.ok) {
+      setError(res.status === 429 ? 'Too many wrong passwords. Wait 15 minutes and try again.' : 'Incorrect password.')
+      setPassword('')
+      return
+    }
     sessionStorage.setItem('superadmin_token', password)
     onLogin(password)
   }

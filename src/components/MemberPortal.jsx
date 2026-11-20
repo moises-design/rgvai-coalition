@@ -36,11 +36,13 @@ function MemberLogin({ notice }) {
     const res = await fetch('/api/send-magic-link', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.trim().toLowerCase(), checkRsvp: true }),
+      body: JSON.stringify({ email: email.trim().toLowerCase() }),
     })
     setLoading(false)
     if (!res.ok) {
-      setError('no-rsvp')
+      setError(res.status === 404 ? 'no-rsvp' : res.status === 429
+        ? 'Too many requests. Please wait a few minutes and try again.'
+        : 'We could not send the link. Please try again.')
       return
     }
     setSent(true)

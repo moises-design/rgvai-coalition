@@ -17,7 +17,7 @@ export default function AdminLogin({ onLogin }) {
     })
     setLoading(false)
     if (!res.ok) {
-      setError('Incorrect password.')
+      setError(res.status === 429 ? 'Too many wrong passwords. Wait 15 minutes and try again.' : 'Incorrect password.')
       setPassword('')
       return
     }

@@ -26,7 +26,16 @@ function button(href, label) {
 }
 
 // Light card on a soft grey page, with the logo on top.
-export function emailLayout({ title, bodyHtml, footnote }) {
+// `unsubscribeUrl` adds the unsubscribe line (reminders only). The mailing
+// address comes from the ORG_MAILING_ADDRESS setting and is left out until
+// that is set, so no address is ever invented here.
+export function emailLayout({ title, bodyHtml, footnote, unsubscribeUrl }) {
+  const address = escapeHtml((process.env.ORG_MAILING_ADDRESS || '').trim())
+  const footerLines = [
+    `© 2026 RGV AI Coalition · ${address || 'Edinburg, TX'}`,
+    footnote,
+    unsubscribeUrl ? `<a href="${escapeHtml(unsubscribeUrl)}" style="color:#6e6e73;text-decoration:underline;">Unsubscribe from reminder emails</a>` : '',
+  ].filter(Boolean)
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -63,8 +72,7 @@ export function emailLayout({ title, bodyHtml, footnote }) {
           <tr>
             <td style="border-top:1px solid #e2e2e7;padding-top:24px;">
               <p style="margin:0;font-size:13px;line-height:1.6;color:#6e6e73;">
-                © 2026 RGV AI Coalition · Edinburg, TX<br/>
-                ${footnote}
+                ${footerLines.join('<br/>\n                ')}
               </p>
             </td>
           </tr>
@@ -101,7 +109,7 @@ export function reminderSubject(meeting) {
 
 // The reminder an admin sends from the dashboard. Every meeting detail comes
 // from the saved meeting, so nothing here needs editing between events.
-export function buildReminderEmail(name, meeting) {
+export function buildReminderEmail(name, meeting, unsubscribeUrl) {
   const firstName = escapeHtml(String(name || '').trim().split(/\s+/)[0])
   const rows = [
     ['When', `${escapeHtml(meeting.event_date)} &nbsp;·&nbsp; ${escapeHtml(meeting.event_time)}`],
@@ -126,11 +134,12 @@ export function buildReminderEmail(name, meeting) {
     title: firstName ? `See you soon, ${firstName}.` : 'See you soon.',
     bodyHtml,
     footnote: 'You are receiving this because you joined at rgvaicoalition.com.',
+    unsubscribeUrl,
   })
 }
 
 // The automatic note sent the day before to members who confirmed.
-export function buildDayBeforeEmail(name, meeting) {
+export function buildDayBeforeEmail(name, meeting, unsubscribeUrl) {
   const firstName = escapeHtml(String(name || '').trim().split(/\s+/)[0])
   const rows = [
     ['When', `Tomorrow &nbsp;·&nbsp; ${escapeHtml(meeting.event_time)}`],
@@ -150,6 +159,7 @@ export function buildDayBeforeEmail(name, meeting) {
     title: firstName ? `See you tomorrow, ${firstName}.` : 'See you tomorrow.',
     bodyHtml,
     footnote: 'You are receiving this because you confirmed your attendance in the member portal.',
+    unsubscribeUrl,
   })
 }
 

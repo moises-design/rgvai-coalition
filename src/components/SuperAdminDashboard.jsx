@@ -46,6 +46,15 @@ function CategoryBadge({ category }) {
   )
 }
 
+// Members cannot be read from the browser (the database blocks it), so every
+// tab gets them from the API with the admin password.
+async function fetchMembers(token) {
+  const res = await fetch('/api/rsvps', { headers: { 'x-admin-token': token } })
+  if (!res.ok) return []
+  const data = await res.json()
+  return Array.isArray(data) ? data : []
+}
+
 // ── Members Tab ───────────────────────────────────────────────────────────────
 function MembersTab({ token }) {
   const [members, setMembers] = useState([])
@@ -58,15 +67,13 @@ function MembersTab({ token }) {
 
   useEffect(() => {
     let active = true
-    supabase.from('rsvps').select('id, name, email, phone, role, created_at')
-      .order('created_at', { ascending: false })
-      .then(({ data }) => {
-        if (!active) return
-        setMembers(data || [])
-        setLoading(false)
-      })
+    fetchMembers(token).then(data => {
+      if (!active) return
+      setMembers(data)
+      setLoading(false)
+    })
     return () => { active = false }
-  }, [])
+  }, [token])
 
   async function handleRoleChange(email, role) {
     setRoleChanging(p => ({ ...p, [email]: true }))
@@ -197,15 +204,20 @@ function MembersTab({ token }) {
 }
 
 // ── Analytics Tab ─────────────────────────────────────────────────────────────
-function AnalyticsTab() {
+function AnalyticsTab({ token }) {
   const [members, setMembers] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.from('rsvps').select('name, created_at, ai_primary, ai_secondary, role')
-      .order('created_at', { ascending: true })
-      .then(({ data }) => { setMembers(data || []); setLoading(false) })
-  }, [])
+    let active = true
+    fetchMembers(token).then(data => {
+      if (!active) return
+      // oldest first, for the weekly chart
+      setMembers([...data].sort((a, b) => new Date(a.created_at) - new Date(b.created_at)))
+      setLoading(false)
+    })
+    return () => { active = false }
+  }, [token])
 
   if (loading) return <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>Loading…</div>
   if (members.length === 0) return <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>No data yet.</div>
@@ -363,13 +375,13 @@ function CommunicationsTab({ token }) {
   }
 
   async function openBlastModal() {
-    let query = supabase.from('rsvps').select('email', { count: 'exact', head: true })
-    if (targetRole !== 'all') query = query.eq('role', targetRole)
-    const [{ count }, { data: meeting }] = await Promise.all([
-      query,
+    const [members, { data: meeting }] = await Promise.all([
+      fetchMembers(token),
       supabase.from('meeting_details').select('*').eq('id', 1).single(),
     ])
-    setBlastCount(count || 0)
+    // Same rule the server applies: the chosen role, minus anyone who unsubscribed.
+    const recipients = members.filter(m => (targetRole === 'all' || m.role === targetRole) && !m.email_opt_out)
+    setBlastCount(recipients.length)
     setBlastMeeting(meeting || null)
     setSendResult(null)
     setModalOpen(true)
@@ -446,7 +458,7 @@ function CommunicationsTab({ token }) {
                 {sendResult.error
                   ? sendResult.error
                   : sendResult.failed === 0
-                  ? `✓ Sent to ${sendResult.sent} recipient${sendResult.sent !== 1 ? 's' : ''}.`
+                  ? `✓ Sent to ${sendResult.sent} recipient${sendResult.sent !== 1 ? 's' : ''}.${sendResult.unsubscribed ? ` ${sendResult.unsubscribed} unsubscribed, not emailed.` : ''}`
                   : `Sent ${sendResult.sent} · Failed ${sendResult.failed}`}
               </div>
             )}
@@ -485,6 +497,14 @@ function CommunicationsTab({ token }) {
   )
 }
 
+// The meeting log has no public access either, so it also comes from the API.
+async function loadHistory(token) {
+  const res = await fetch('/api/meeting', { headers: { 'x-admin-token': token } })
+  if (!res.ok) return []
+  const data = await res.json()
+  return Array.isArray(data) ? data : []
+}
+
 // ── Meetings Tab ──────────────────────────────────────────────────────────────
 function MeetingsTab({ token }) {
   const [form, setForm] = useState({ event_date: '', event_time: '', location: '', notes: '' })
@@ -501,13 +521,11 @@ function MeetingsTab({ token }) {
       .then(({ data }) => {
         if (data) setForm({ event_date: data.event_date, event_time: data.event_time, location: data.location, notes: data.notes || '' })
       })
-    supabase.from('meetings_history').select('*').order('recorded_at', { ascending: false }).limit(20)
-      .then(({ data }) => setHistory(data || []))
+    loadHistory(token).then(setHistory)
     fetch('/api/confirm-attendance', { headers: { 'x-admin-token': token } })
       .then(r => r.json())
       .then(data => { setConfirmations(Array.isArray(data) ? data : []); setConfLoading(false) })
-    supabase.from('rsvps').select('id', { count: 'exact', head: true })
-      .then(({ count }) => setTotalMembers(count || 0))
+    fetchMembers(token).then(data => setTotalMembers(data.length))
   }, [token])
 
   async function handleSave(e) {
@@ -524,8 +542,7 @@ function MeetingsTab({ token }) {
     setSaving(false)
     if (!res.ok) { setError(data.error || 'Failed to save.'); return }
     setResult('✓ Meeting details updated.')
-    supabase.from('meetings_history').select('*').order('recorded_at', { ascending: false }).limit(20)
-      .then(({ data: h }) => setHistory(h || []))
+    loadHistory(token).then(setHistory)
   }
 
   async function handleResetConfirmations() {
@@ -805,7 +822,7 @@ export default function SuperAdminDashboard({ token }) {
 
         <div className="admin-tab-content">
           {activeTab === 'Members'        && <MembersTab token={token} />}
-          {activeTab === 'Analytics'      && <AnalyticsTab />}
+          {activeTab === 'Analytics'      && <AnalyticsTab token={token} />}
           {activeTab === 'Communications' && <CommunicationsTab token={token} />}
           {activeTab === 'Meetings'       && <MeetingsTab token={token} />}
           {activeTab === 'Resources'      && <ResourcesTab token={token} />}
