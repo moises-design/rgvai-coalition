@@ -100,9 +100,14 @@ export default function WorkshopsPage() {
                 </ul>
               </div>
             </div>
-            <a href={mailtoLink('Host a workshop with RGV AI Coalition')} className="cta-btn-primary dl-inline-cta">
-              Ask about hosting
-            </a>
+            <div className="ws-host-actions">
+              <a href={mailtoLink('Host a workshop with RGV AI Coalition')} className="cta-btn-primary">
+                Ask about hosting
+              </a>
+              <a href="/host-a-workshop.pdf" className="cta-btn-secondary" target="_blank" rel="noopener">
+                Download the one-page flyer (PDF)
+              </a>
+            </div>
           </div>
         </section>
 
