@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 import { buildReminderEmail, meetingHasPassed, reminderSubject } from './_email.js'
-import { ADMIN, SUPER, requireAdmin, unsubscribeHeaders, unsubscribeLinks } from './_guard.js'
+import { ADMIN, SUPER, interestLink, requireAdmin, unsubscribeHeaders, unsubscribeLinks } from './_guard.js'
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL,
@@ -38,6 +38,11 @@ export default async function handler(req, res) {
   }
   if (fetchError) return res.status(500).json({ error: fetchError.message })
 
+  // The topic buttons go in only when the Learn or teach board's table exists,
+  // so an email never points at a board that cannot save an answer.
+  const { error: boardError } = await supabase.from('topic_interest').select('voter_key', { count: 'exact', head: true })
+  const boardOpen = !boardError
+
   // Members who unsubscribed are never emailed.
   const recipients = rsvps.filter(member => !member.email_opt_out)
 
@@ -47,7 +52,7 @@ export default async function handler(req, res) {
         from: EMAIL_FROM,
         to: email,
         subject: reminderSubject(meeting),
-        html: buildReminderEmail(name, meeting, unsubscribeLinks(email).page),
+        html: buildReminderEmail(name, meeting, unsubscribeLinks(email).page, boardOpen ? topic => interestLink(email, topic) : undefined),
         headers: unsubscribeHeaders(email),
       })
     )

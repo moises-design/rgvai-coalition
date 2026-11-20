@@ -24,6 +24,11 @@ const COLLECTED = [
     why: 'To limit repeated attempts, so nobody can flood your inbox or guess a password. These records are deleted after one day.',
   },
   {
+    title: 'The “Learn or teach” board',
+    what: 'The topics you tap, and anything you type in “What would you show?” or “Something else?”. Your email address only if you give it; we ask for it when you offer to teach. If you answer from a link in one of our emails, the answer is saved with the email address that message was sent to. Your browser also keeps a random number so you can change your answers later.',
+    why: 'To choose what our meetups and workshops cover, and to contact people who offered to teach. The site shows totals for each topic only, never who answered.',
+  },
+  {
     title: 'Front desk review request',
     what: 'Your name, clinic or practice name, email address, phone number if you choose to give it, the workflow you select, and any message you write.',
     why: 'To contact you about the front desk review you asked for. The request is emailed to Rich Gomez, the workshop co-presenter who follows up.',
@@ -41,7 +46,7 @@ const COLLECTED = [
 ]
 
 const SERVICES = [
-  { name: 'Supabase', role: 'stores sign-ups, member records and review requests, and handles member sign-in.' },
+  { name: 'Supabase', role: 'stores sign-ups, member records, review requests and “Learn or teach” answers, and handles member sign-in.' },
   { name: 'Vercel', role: 'hosts the website.' },
   { name: 'Resend', role: 'sends our emails, such as sign-in links, event reminders and review request notices.' },
   { name: 'Google Fonts', role: 'supplies the fonts on our pages, so Google receives your IP address when the fonts load.' },
@@ -134,7 +139,8 @@ export default function PrivacyPage() {
           <div className="dl-mission-card">
             <p>
               If you sign in to the member portal, your browser keeps a sign-in record so you stay signed in.
-              If you use the “Your clinic” box, your browser keeps what you typed. We do not use advertising
+              If you use the “Your clinic” box, your browser keeps what you typed. If you answer the “Learn or teach” board,
+              your browser keeps your picks and a random number that lets you change them. We do not use advertising
               cookies. Clearing your browser’s site data removes all of this.
             </p>
           </div>

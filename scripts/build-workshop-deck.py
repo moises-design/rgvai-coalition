@@ -1,15 +1,16 @@
-"""Builds the AI for Small Business workshop deck from src/data/aiForSmallBusiness.js.
+"""Builds a workshop deck from its data file (every workshop except healthcare,
+which has its own script, build-deck.py).
 
-Same approach as build-deck.py (the healthcare deck): an editable PowerPoint
-with real text boxes, rendered to the PDF and slide images that
-/ai-for-small-business serves from public/ai-for-small-business/.
+Produces an editable PowerPoint with real text boxes, then renders it to the
+PDF and slide images the workshop page serves from public/<slug>/.
 
-Usage:  python3 scripts/build-deck-small-business.py [output.pptx]
+Usage:  python3 scripts/build-workshop-deck.py <workshop> [output.pptx]
+        <workshop> is one of the keys of WORKSHOPS below.
 Needs:  python-pptx, segno, node, LibreOffice (soffice), poppler (pdftoppm),
         and the Manrope and Inter fonts installed.
 
 Slides carry few words in large type (nothing under 16pt); the full wording
-goes in the speaker notes. Prompt and step text comes from the data file.
+goes in the speaker notes. All slide text comes from the data file.
 """
 import json, os, shutil, subprocess, sys, tempfile
 from pptx import Presentation
@@ -20,24 +21,34 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.oxml.ns import qn
 from lxml import etree
 
+# workshop key -> (data file, workshop export, fill export)
+WORKSHOPS = {
+    'small-business': ('aiForSmallBusiness.js', 'SMALL_BUSINESS', 'fillBusiness'),
+    'nonprofits': ('aiForNonprofits.js', 'NONPROFITS', 'fillNonprofit'),
+}
+if len(sys.argv) < 2 or sys.argv[1] not in WORKSHOPS:
+    sys.exit('usage: build-workshop-deck.py <%s> [output.pptx]' % '|'.join(WORKSHOPS))
+DATA_FILE, WORKSHOP_EXPORT, FILL_EXPORT = WORKSHOPS[sys.argv[1]]
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS = os.path.join(ROOT, 'scripts', 'deck-assets')
-PUBLIC = os.path.join(ROOT, 'public', 'ai-for-small-business')
-os.makedirs(PUBLIC, exist_ok=True)
-tmp = tempfile.mkdtemp(prefix='deck-')
-NAME = 'ai-for-small-business-deck'
-out = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.join(tmp, NAME + '.pptx')
-PAGE = 'rgvaicoalition.com/ai-for-small-business'
 
 DUMP = """
-import { SMALL_BUSINESS as w, fillBusiness } from './src/data/aiForSmallBusiness.js';
-const fill = t => fillBusiness(t, {}).map(s => s.text).join('');
-console.log(JSON.stringify({ titles: w.slides.map(s => s.title), steps: w.laptopsSteps,
+import { %s as w, %s as fillOf } from './src/data/%s';
+const fill = t => fillOf(t, {}).map(s => s.text).join('');
+console.log(JSON.stringify({ titles: w.slides.map(s => s.title), steps: w.laptopsSteps, deck: w.deck,
   prompts: w.prompts.map(p => ({ ...p, text: fill(p.text) })),
   form: { ...w.formDemo, text: fill(w.formDemo.text) }, laptops: w.laptopsSlide, formSlide: w.formSlide }));
-"""
+""" % (WORKSHOP_EXPORT, FILL_EXPORT, DATA_FILE)
 D = json.loads(subprocess.run(['node', '--input-type=module', '-e', DUMP], cwd=ROOT, check=True, capture_output=True, text=True).stdout)
-T = D['titles']
+T = D['titles']; K = D['deck']
+SLUG = K['slug']
+PUBLIC = os.path.join(ROOT, 'public', SLUG)
+os.makedirs(PUBLIC, exist_ok=True)
+tmp = tempfile.mkdtemp(prefix='deck-')
+NAME = SLUG + '-deck'
+out = os.path.abspath(sys.argv[2]) if len(sys.argv) > 2 else os.path.join(tmp, NAME + '.pptx')
+PAGE = 'rgvaicoalition.com/' + SLUG
 
 # The QR code opens the page on the "Laptops out" slide. It uses #laptops, not
 # a slide number, so it keeps working when slides are added.
@@ -129,20 +140,19 @@ def card_grid(slide, items, rows, title_color=NAVY, head_size=24):
 s = new_slide(T[0]); s.background.fill.fore_color.rgb = rgb(NAVY)
 text(s, LEFT, 1.2, WIDTH, 0.6, [dict(text='RGV AI COALITION  ·  HANDS-ON WORKSHOP', size=18, bold=True, color=PALE, line=1.2)])
 text(s, LEFT, 2.3, WIDTH, 2.4, [dict(text=T[0], font=HEAD, bold=True, size=72, color=WHITE, line=1.02)], name='Title')
-text(s, LEFT, 4.7, WIDTH, 0.9, [dict(text='Get your evenings back.', size=32, color=PALE, line=1.2)])
+text(s, LEFT, 4.7, WIDTH, 0.9, [dict(text=K['tagline'], size=32, color=PALE, line=1.2)])
 
 # 2 who we are (the same short bios as the healthcare deck)
 s = new_slide(notes_for(2, 'Moises Segovia. A healthcare and technology entrepreneur based in the Rio Grande Valley, owner of Life Star EMS and co-owner of Rio Care EMS. He worked as an EMT. Through Vital Care he is developing software and exploring practical uses of AI.\n\n'
     'Rich Gomez. He has done marketing for over 15 years and has worked with AI since it started, building the follow-up and automation that keeps schedules full. As a biomed tech he went into different clinics and saw the paperwork pile up while staff were stretched thin.'))
 title(s, T[1], 0.55)
-for x, name, side, items in [
-    (0.59, 'Moises Segovia', 'Runs businesses here', ['Owner, Life Star EMS', 'Co-owner, Rio Care EMS', 'Former EMT', 'Building Vital Care']),
-    (6.82, 'Rich Gomez', 'Marketing and systems', ['15+ years in marketing', 'Biomed tech in clinics', 'Builds follow-up automation'])]:
+for x, who in zip((0.59, 6.82), K['presenters']):
+    name, side, items = who['name'], who['side'], who['items']
     card(s, x, 2.15, 5.94, 3.3, CARD)
     text(s, x + 0.35, 2.4, 5.24, 3.0, [dict(text=name, font=HEAD, bold=True, size=26, color=INK, line=1.1, after=2),
         dict(text=side, size=18, bold=True, color=TEAL, after=10)] + plain_bullets(items, size=19, after=5))
 card(s, LEFT, 5.7, WIDTH, 1.15, PALE)
-text(s, LEFT + 0.4, 5.7, WIDTH - 0.8, 1.15, [dict(runs=[('The goal: ', dict(bold=True, color=NAVY)), ('less busywork after closing.', {})], font=HEAD, size=24, line=1.2)], anchor='middle')
+text(s, LEFT + 0.4, 5.7, WIDTH - 0.8, 1.15, [dict(runs=[('The goal: ', dict(bold=True, color=NAVY)), (K['goal'], {})], font=HEAD, size=24, line=1.2)], anchor='middle')
 
 # 3 what do you use AI for (audience question, same slide as the healthcare deck)
 s = new_slide(notes_for(3, 'Ask the room first: what do you use AI for? Then: what CAN you use it for?\n\n'
@@ -163,25 +173,18 @@ text(s, 6.3, 2.65, 6.45, 4.3, lead_bullets([
     ('Data', '  trends, forecasts, red flags'),
     ('Coding', '  write, fix, and explain code')], size=21, after=13))
 
-# 4 the work that waits
-s = new_slide(notes_for(4, 'Ask the room which of these they did last night. Reviews that need an answer, the week of social posts, quotes that were sent and never chased, and follow-ups with customers. None of it is the work they opened the business to do.'))
+# 4 the problem
+s = new_slide(notes_for(4, K['problem']['notes']))
 title(s, T[3], 0.55)
-card_grid(s, [(h, [dict(text=b, size=20, color=BODY, line=1.25)]) for h, b in [
-    ('Reviews', 'Every one deserves an answer.'),
-    ('Social posts', 'A week of them, every week.'),
-    ('Quotes', 'Sent, then never chased.'),
-    ('Follow-ups', 'The first thing to slip.')]], [(2.2, 2.0), (4.45, 2.0)])
+card_grid(s, [(h, [dict(text=b, size=20, color=BODY, line=1.25)]) for h, b in K['problem']['cards']], [(2.2, 2.0), (4.45, 2.0)])
 
-# 5 AI drafts, you decide
-s = new_slide(notes_for(5, 'Use only your facts: tell the AI what is true, and tell it not to invent prices, awards or quotes.\nNo customer data: names, phone numbers and payment details stay out of the AI tool.\nCheck before you post: a confident answer can still be wrong. Read it, count it, read the Spanish out loud.\n\nAI writes the first draft. You approve the last one.'))
+# 5 the rules
+s = new_slide(notes_for(5, K['rules']['notes']))
 title(s, T[4], 0.55)
-text(s, LEFT, 1.42, 6.9, 5.5, lead_bullets([
-    ('Use only your facts.', ' Tell it what is true.'),
-    ('No customer data.', ' Names, numbers and cards stay out.'),
-    ('Check before you post.', ' Confident can still be wrong.')], size=23, after=22), anchor='middle')
+text(s, LEFT, 1.42, 6.9, 5.5, lead_bullets([tuple(b) for b in K['rules']['bullets']], size=23, after=22), anchor='middle')
 card(s, 7.75, 1.42, 5.0, 5.5, PALE)
-text(s, 8.1, 1.42, 4.3, 5.5, [dict(text='You are still the owner.', font=HEAD, bold=True, size=26, color=NAVY, after=12, line=1.15),
-    dict(text='AI writes the first draft. You approve the last one.', size=22, line=1.3)], anchor='middle')
+text(s, 8.1, 1.42, 4.3, 5.5, [dict(text=K['rules']['cardTitle'], font=HEAD, bold=True, size=26, color=NAVY, after=12, line=1.15),
+    dict(text=K['rules']['cardBody'], size=22, line=1.3)], anchor='middle')
 
 # 6 laptops out
 n = D['laptops']
@@ -191,7 +194,7 @@ card(s, 10.38, 2.0, 2.37, 2.37, WHITE, radius=0.16)
 s.shapes.add_picture(QR, Inches(10.46), Inches(2.08), width=Inches(2.21), height=Inches(2.21))
 text(s, 9.78, 4.5, 3.57, 1.4, [dict(text='Scan to follow along', font=HEAD, bold=True, size=18, color=INK, align='center', after=4),
     dict(text='rgvaicoalition.com', size=16, bold=True, color=NAVY, align='center', line=1.15),
-    dict(text='/ai-for-small-business', size=16, bold=True, color=NAVY, align='center', line=1.15)])
+    dict(text='/' + SLUG, size=16, bold=True, color=NAVY, align='center', line=1.15)])
 
 # 7-10 prompts: the gist in large type; the full prompt is on the page and in the notes.
 for p in D['prompts']:
@@ -218,16 +221,14 @@ card(s, LEFT, 6.1, WIDTH, 0.8, PALE, radius=0.16)
 text(s, LEFT + 0.4, 6.1, WIDTH - 0.8, 0.8, [dict(text=F['slideNote'], size=19, bold=True, color=NAVY, line=1.2)], anchor='middle')
 
 # 12 habit
-s = new_slide(notes_for(12, 'Monday: plan the week of posts with prompt 2, then schedule them.\nEvery day: answer new reviews with prompt 1, and read each reply before you post it.\nFriday: follow up on open quotes with prompt 3, one text each.\n\nThe point is a routine, so the work stops waiting until after closing.'))
+s = new_slide(notes_for(12, K['habit']['notes']))
 title(s, T[11], 0.7)
-numbered(s, [('Monday: plan the week of posts', 'Prompt 2. Schedule them and you are done.'),
-    ('Every day: answer new reviews', 'Prompt 1. Read each reply before you post.'),
-    ('Friday: follow up on open quotes', 'Prompt 3. One short text each.')], 2.5, 1.4, head_size=26, body_size=20)
+numbered(s, [tuple(item) for item in K['habit']['items']], 2.5, 1.4, head_size=26, body_size=20)
 
 # 13 close
 s = new_slide(notes_for(13, 'Thank the room. The prompts stay online at ' + PAGE + '. Groups that want this session can ask at rgvaicoalition.com/workshops, and anyone can join the coalition on the home page to hear about the next one.'))
 title(s, T[12], 1.6, size=48, w=9.6, x=1.87, align='center', h=1.0)
-text(s, 1.87, 3.0, 9.6, 1.2, [dict(text='The prompts stay online. Bring this workshop to your group.', size=24, color=BODY, align='center', line=1.35)])
+text(s, 1.87, 3.0, 9.6, 1.2, [dict(text=K['closeLine'], size=24, color=BODY, align='center', line=1.35)])
 btn = card(s, 3.67, 4.75, 6.0, 0.9, NAVY, radius=0.45)
 btn.click_action.hyperlink.address = 'https://rgvaicoalition.com/workshops'
 tf = btn.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE; para = tf.paragraphs[0]; para.alignment = PP_ALIGN.CENTER

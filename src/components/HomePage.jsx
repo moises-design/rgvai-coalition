@@ -8,6 +8,7 @@ import SuccessScreen from './SuccessScreen'
 import HeroOrb from './HeroOrb'
 import TiltCard from './TiltCard'
 import NextMeetup from './NextMeetup'
+import LearnTeachBoard from './LearnTeachBoard'
 
 const PILLARS = [
   {
@@ -206,6 +207,19 @@ export default function HomePage() {
               <li key={name} className="audience">{name}</li>
             ))}
           </ul>
+        </section>
+
+        <section className="home-section" id="learn" aria-labelledby="learn-title">
+          <div className="section-head" data-reveal>
+            <p className="eyebrow">Learn or teach</p>
+            <h2 className="section-title" id="learn-title">
+              What should we cover next? <span className="section-title-soft">You tell us.</span>
+            </h2>
+            <p className="lt-lead">
+              Tap what you want to learn and what you could teach. It takes 20 seconds and needs no account.
+            </p>
+          </div>
+          <LearnTeachBoard />
         </section>
 
         <section className="home-section home-join" id="join" aria-labelledby="join-title">

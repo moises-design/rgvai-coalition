@@ -1,6 +1,8 @@
 // Shared look and wording for the emails the site sends. The leading
 // underscore keeps Vercel from treating this file as an API route.
 
+import { TOPICS } from '../src/data/topics.js'
+
 const SITE = 'https://rgvaicoalition.com'
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif"
 
@@ -19,6 +21,12 @@ export function meetingHasPassed(meeting, now = Date.now()) {
   const when = new Date(`${meeting.event_date} ${meeting.event_time}`)
   if (isNaN(when)) return false
   return now - when.getTime() > 24 * 3600000
+}
+
+// The meeting's ticket link, only when it is a normal https address.
+export function ticketLink(meeting) {
+  const value = String(meeting?.ticket_url || '').trim()
+  return /^https:\/\/[^\s"'<>]+\.[^\s"'<>]+$/.test(value) ? value : ''
 }
 
 function button(href, label) {
@@ -103,13 +111,29 @@ function detailRow(label, value, last) {
                 </tr>`
 }
 
+// "What should a future meetup cover?" with one button per topic. Each opens
+// the Learn or teach board with that topic picked.
+function topicPicker(interestUrl) {
+  const pill = (href, label) => `<a href="${escapeHtml(href)}" style="display:inline-block;margin:0 8px 10px 0;background:#eef4ff;color:#0b63f6;font-weight:600;font-size:15px;padding:10px 18px;border-radius:980px;text-decoration:none;">${escapeHtml(label)}</a>`
+  return `
+          <tr>
+            <td style="padding-bottom:28px;">
+              <p style="margin:0 0 6px;font-size:17px;font-weight:700;color:#1d1d1f;">What should a future meetup cover?</p>
+              <p style="margin:0 0 14px;font-size:15px;line-height:1.5;color:#6e6e73;">Tap a topic. No sign-in needed.</p>
+              ${TOPICS.filter(topic => topic.inEmail).map(topic => pill(interestUrl(topic.id), topic.label)).join('')}${pill(interestUrl(''), 'See all topics')}
+            </td>
+          </tr>`
+}
+
 export function reminderSubject(meeting) {
   return `Reminder: RGV AI Coalition meets ${meeting.event_date}`
 }
 
 // The reminder an admin sends from the dashboard. Every meeting detail comes
 // from the saved meeting, so nothing here needs editing between events.
-export function buildReminderEmail(name, meeting, unsubscribeUrl) {
+// `interestUrl(topicId)` is optional; with it the email also asks what a
+// future meetup should cover.
+export function buildReminderEmail(name, meeting, unsubscribeUrl, interestUrl) {
   const firstName = escapeHtml(String(name || '').trim().split(/\s+/)[0])
   const rows = [
     ['When', `${escapeHtml(meeting.event_date)} &nbsp;·&nbsp; ${escapeHtml(meeting.event_time)}`],
@@ -126,9 +150,9 @@ export function buildReminderEmail(name, meeting, unsubscribeUrl) {
           </tr>
           <tr>
             <td style="padding-bottom:28px;">
-              ${button(`${SITE}/member`, 'Confirm in the member portal')}
+              ${ticketLink(meeting) ? button(ticketLink(meeting), 'Get tickets') : button(`${SITE}/member`, 'Confirm in the member portal')}
             </td>
-          </tr>${paragraph('It is free, and friends are welcome.')}`
+          </tr>${paragraph(ticketLink(meeting) ? 'Friends are welcome. Share the ticket link with them.' : 'It is free, and friends are welcome.')}${interestUrl ? topicPicker(interestUrl) : ''}`
 
   return emailLayout({
     title: firstName ? `See you soon, ${firstName}.` : 'See you soon.',
