@@ -220,6 +220,10 @@ export default function HomePage() {
             </p>
           </div>
           <LearnTeachBoard />
+          <p className="lt-more">
+            Built something with AI? <Link to="/showcase">Show it on the showcase</Link>. Want to back this work?{' '}
+            <Link to="/support">See how to support us</Link>.
+          </p>
         </section>
 
         <section className="home-section home-join" id="join" aria-labelledby="join-title">

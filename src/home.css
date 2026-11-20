@@ -717,6 +717,18 @@
   }
 }
 
+.lt-more {
+  margin-top: 22px;
+  max-width: 820px;
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+.lt-more a {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
 /* ── Join ── */
 .home-join {
   display: grid;
