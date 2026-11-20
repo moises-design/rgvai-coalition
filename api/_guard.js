@@ -107,3 +107,28 @@ export function unsubscribeHeaders(email) {
     'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
   }
 }
+
+// "Learn or teach" links in reminder emails are signed the same way, with
+// their own token, so an answer from an email is tied to that member without
+// a sign-in and the link cannot be used to unsubscribe anyone.
+export function interestToken(email) {
+  return crypto.createHmac('sha256', secret()).update(`interest:${String(email).trim().toLowerCase()}`).digest('hex').slice(0, 32)
+}
+
+export function validInterestToken(email, token) {
+  return Boolean(email && token) && safeEqual(interestToken(email), token)
+}
+
+// Opens the board with one topic already picked. Nothing is saved until the
+// person presses the button on the page, so a mail scanner that merely opens
+// the link cannot answer for them.
+export function interestLink(email, topicId) {
+  const address = String(email).trim().toLowerCase()
+  const topic = topicId ? `topic=${encodeURIComponent(topicId)}&` : ''
+  return `${SITE}/learn?${topic}e=${encodeURIComponent(address)}&t=${interestToken(address)}`
+}
+
+// One-way key for a person's row on the board.
+export function interestVoterKey(identity) {
+  return hashKey(`interest:${identity}`)
+}

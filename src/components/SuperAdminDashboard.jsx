@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import ConfirmModal from './ConfirmModal'
 import Logo from './Logo'
+import { RESULTS_MIN_PEOPLE, TOPICS } from '../data/topics'
 
 // ── Shared helpers ────────────────────────────────────────────────────────────
 function formatDate(iso) {
@@ -805,8 +806,87 @@ function ResourcesTab({ token }) {
   )
 }
 
+// ── Interests Tab (the Learn or teach board) ─────────────────────────────────
+function InterestsTab({ token }) {
+  const [data, setData] = useState(null)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let active = true
+    fetch('/api/interest', { headers: { 'x-admin-token': token } })
+      .then(async res => {
+        const body = await res.json().catch(() => ({}))
+        if (!active) return
+        if (!res.ok) setError(body.error || 'Could not load the answers.')
+        else setData(body)
+      })
+      .catch(() => { if (active) setError('Could not load the answers.') })
+    return () => { active = false }
+  }, [token])
+
+  const muted = { color: 'var(--text-muted)', fontSize: '0.9rem' }
+  if (error) return <div className="server-error" role="alert">{error}</div>
+  if (!data) return <p style={muted}>Loading…</p>
+  if (data.open === false) {
+    return <p style={muted}>The Learn or teach board is not open yet. Its database table has not been added.</p>
+  }
+
+  const label = id => TOPICS.find(topic => topic.id === id)?.label || id
+  const rows = [...data.topics].sort((a, b) => b.learn - a.learn)
+  const teachers = data.answers.filter(answer => answer.teach?.length)
+  const suggestions = data.answers.filter(answer => answer.suggestion)
+
+  return (
+    <>
+      <p style={{ ...muted, marginBottom: '16px' }}>
+        {data.people} {data.people === 1 ? 'person has' : 'people have'} answered on the Learn or teach board.
+        The public results strip appears at {RESULTS_MIN_PEOPLE}.
+      </p>
+      <div className="admin-table-wrap">
+        <table className="admin-table">
+          <thead>
+            <tr><th>Topic</th><th>Want to learn</th><th>Can teach</th></tr>
+          </thead>
+          <tbody>
+            {rows.map(row => (
+              <tr key={row.id}><td>{label(row.id)}</td><td>{row.learn}</td><td>{row.teach}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style={{ margin: '28px 0 12px', fontSize: '1rem' }}>People who can teach ({teachers.length})</h3>
+      {teachers.length === 0 ? <p style={muted}>Nobody has offered yet.</p> : (
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr><th>Email</th><th>Topics</th><th>What they would show</th></tr>
+            </thead>
+            <tbody>
+              {teachers.map((answer, i) => (
+                <tr key={i}>
+                  <td>{answer.email ? <a href={`mailto:${answer.email}`}>{answer.email}</a> : '—'}</td>
+                  <td>{answer.teach.map(label).join(', ')}</td>
+                  <td>{answer.teach_note || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <h3 style={{ margin: '28px 0 12px', fontSize: '1rem' }}>Other topics people asked for ({suggestions.length})</h3>
+      {suggestions.length === 0 ? <p style={muted}>None yet.</p> : (
+        <ul style={{ paddingLeft: '20px', display: 'grid', gap: '6px', fontSize: '0.92rem' }}>
+          {suggestions.map((answer, i) => <li key={i}>{answer.suggestion}</li>)}
+        </ul>
+      )}
+    </>
+  )
+}
+
 // ── Main Dashboard ────────────────────────────────────────────────────────────
-const TABS = ['Members', 'Analytics', 'Communications', 'Meetings', 'Resources']
+const TABS = ['Members', 'Analytics', 'Communications', 'Meetings', 'Resources', 'Interests']
 
 export default function SuperAdminDashboard({ token }) {
   const [activeTab, setActiveTab] = useState('Members')
@@ -837,6 +917,7 @@ export default function SuperAdminDashboard({ token }) {
           {activeTab === 'Communications' && <CommunicationsTab token={token} />}
           {activeTab === 'Meetings'       && <MeetingsTab token={token} />}
           {activeTab === 'Resources'      && <ResourcesTab token={token} />}
+          {activeTab === 'Interests'      && <InterestsTab token={token} />}
         </div>
       </main>
 
