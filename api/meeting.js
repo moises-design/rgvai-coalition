@@ -6,6 +6,15 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+function isHttpsUrl(value) {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && url.hostname.includes('.')
+  } catch {
+    return false
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST' && req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' })
   if (!await requireAdmin(supabase, req, res, 'x-admin-token', [ADMIN(), SUPER()])) return
@@ -19,9 +28,16 @@ export default async function handler(req, res) {
     return res.status(200).json(data)
   }
 
-  const { event_date, event_time, location, notes } = req.body
+  const { event_date, event_time, location, notes, ticket_url } = req.body
   if (!event_date?.trim() || !event_time?.trim() || !location?.trim()) {
     return res.status(400).json({ error: 'Date, time, and location are required' })
+  }
+
+  // Optional ticket link. It becomes a button on the public home page and in
+  // emails, so only a normal https web address is accepted.
+  const ticketUrl = typeof ticket_url === 'string' ? ticket_url.trim() : ''
+  if (ticketUrl && !isHttpsUrl(ticketUrl)) {
+    return res.status(400).json({ error: 'The ticket link must be a full web address starting with https://' })
   }
 
   const payload = {
@@ -31,11 +47,22 @@ export default async function handler(req, res) {
     notes: notes?.trim() || null,
   }
 
-  const [upsertResult] = await Promise.all([
-    supabase.from('meeting_details').upsert({ id: 1, ...payload, updated_at: new Date().toISOString() }).select().single(),
+  const save = extra => supabase.from('meeting_details')
+    .upsert({ id: 1, ...payload, ...extra, updated_at: new Date().toISOString() }).select().single()
+
+  let [upsertResult] = await Promise.all([
+    save({ ticket_url: ticketUrl || null }),
     supabase.from('meetings_history').insert([payload]),
   ])
 
+  // The ticket link column may not be in the database yet. Save the rest, and
+  // say so if a link was typed, so it is not silently dropped.
+  let ticketSaved = true
+  if (upsertResult.error && ['42703', 'PGRST204'].includes(upsertResult.error.code)) {
+    ticketSaved = !ticketUrl
+    upsertResult = await save({})
+  }
+
   if (upsertResult.error) return res.status(500).json({ error: upsertResult.error.message })
-  return res.status(200).json(upsertResult.data)
+  return res.status(200).json({ ...upsertResult.data, ticket_saved: ticketSaved })
 }

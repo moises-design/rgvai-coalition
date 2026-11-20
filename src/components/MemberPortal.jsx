@@ -224,6 +224,11 @@ function MemberContent({ session }) {
                       <span className="event-detail-value">{meeting.location}</span>
                     </div>
                   </div>
+                  {/^https:\/\/\S+\.\S+$/.test(meeting.ticket_url || '') && (
+                    <a href={meeting.ticket_url} className="cta-btn-secondary" target="_blank" rel="noopener noreferrer" style={{ alignSelf: 'flex-start' }}>
+                      Get tickets
+                    </a>
+                  )}
                   {meeting.notes && (
                     <div className="event-detail-item">
                       <span className="event-detail-icon" aria-hidden="true">◈</span>

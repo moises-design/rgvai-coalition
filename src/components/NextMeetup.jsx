@@ -12,14 +12,23 @@ function upcoming(meeting) {
   return when.getTime() > Date.now() - 3 * 3600000
 }
 
+// The optional ticket link (for example a Valley Tickets page), only when it
+// is a normal https address.
+function ticketUrl(meeting) {
+  const value = String(meeting?.ticket_url || '').trim()
+  return /^https:\/\/\S+\.\S+$/.test(value) ? value : ''
+}
+
 export default function NextMeetup() {
   const [meeting, setMeeting] = useState(null)
 
   useEffect(() => {
     let active = true
+    // `*` so this keeps working whether or not the optional ticket link
+    // column is in the database yet.
     supabase
       .from('meeting_details')
-      .select('event_date, event_time, location')
+      .select('*')
       .eq('id', 1)
       .single()
       .then(({ data }) => {
@@ -39,7 +48,13 @@ export default function NextMeetup() {
           <h2 className="next-meetup-title" id="next-meetup-title">{meeting.event_date}</h2>
           <p className="next-meetup-detail">{meeting.event_time} · {meeting.location}</p>
         </div>
-        <a href="#join" className="btn btn-primary">Join to save your spot</a>
+        {ticketUrl(meeting) ? (
+          <a href={ticketUrl(meeting)} className="btn btn-primary" target="_blank" rel="noopener noreferrer">
+            Get tickets
+          </a>
+        ) : (
+          <a href="#join" className="btn btn-primary">Join to save your spot</a>
+        )}
       </div>
     </section>
   )

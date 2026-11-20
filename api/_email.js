@@ -21,6 +21,12 @@ export function meetingHasPassed(meeting, now = Date.now()) {
   return now - when.getTime() > 24 * 3600000
 }
 
+// The meeting's ticket link, only when it is a normal https address.
+export function ticketLink(meeting) {
+  const value = String(meeting?.ticket_url || '').trim()
+  return /^https:\/\/[^\s"'<>]+\.[^\s"'<>]+$/.test(value) ? value : ''
+}
+
 function button(href, label) {
   return `<a href="${escapeHtml(href)}" style="display:inline-block;background:#0b63f6;color:#ffffff;font-weight:600;font-size:16px;padding:14px 30px;border-radius:980px;text-decoration:none;">${label}</a>`
 }
@@ -126,9 +132,9 @@ export function buildReminderEmail(name, meeting, unsubscribeUrl) {
           </tr>
           <tr>
             <td style="padding-bottom:28px;">
-              ${button(`${SITE}/member`, 'Confirm in the member portal')}
+              ${ticketLink(meeting) ? button(ticketLink(meeting), 'Get tickets') : button(`${SITE}/member`, 'Confirm in the member portal')}
             </td>
-          </tr>${paragraph('It is free, and friends are welcome.')}`
+          </tr>${paragraph(ticketLink(meeting) ? 'Friends are welcome. Share the ticket link with them.' : 'It is free, and friends are welcome.')}`
 
   return emailLayout({
     title: firstName ? `See you soon, ${firstName}.` : 'See you soon.',

@@ -507,7 +507,7 @@ async function loadHistory(token) {
 
 // ── Meetings Tab ──────────────────────────────────────────────────────────────
 function MeetingsTab({ token }) {
-  const [form, setForm] = useState({ event_date: '', event_time: '', location: '', notes: '' })
+  const [form, setForm] = useState({ event_date: '', event_time: '', location: '', notes: '', ticket_url: '' })
   const [saving, setSaving] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
@@ -519,7 +519,7 @@ function MeetingsTab({ token }) {
   useEffect(() => {
     supabase.from('meeting_details').select('*').eq('id', 1).single()
       .then(({ data }) => {
-        if (data) setForm({ event_date: data.event_date, event_time: data.event_time, location: data.location, notes: data.notes || '' })
+        if (data) setForm({ event_date: data.event_date, event_time: data.event_time, location: data.location, notes: data.notes || '', ticket_url: data.ticket_url || '' })
       })
     loadHistory(token).then(setHistory)
     fetch('/api/confirm-attendance', { headers: { 'x-admin-token': token } })
@@ -541,7 +541,9 @@ function MeetingsTab({ token }) {
     const data = await res.json()
     setSaving(false)
     if (!res.ok) { setError(data.error || 'Failed to save.'); return }
-    setResult('✓ Meeting details updated.')
+    setResult(data.ticket_saved === false
+      ? '✓ Meeting saved, but the ticket link could not be saved yet. The database needs its ticket link update first.'
+      : '✓ Meeting details updated.')
     loadHistory(token).then(setHistory)
   }
 
@@ -588,6 +590,15 @@ function MeetingsTab({ token }) {
               <textarea id="m-notes" className="field-input field-textarea" value={form.notes}
                 onChange={e => setForm(p => ({ ...p, notes: e.target.value }))}
                 placeholder="Parking info, agenda…" rows={3} />
+            </div>
+            <div className="field-group">
+              <label className="field-label" htmlFor="m-ticket">Ticket link <span className="optional-tag">optional</span></label>
+              <input id="m-ticket" type="url" className="field-input" value={form.ticket_url}
+                onChange={e => setForm(p => ({ ...p, ticket_url: e.target.value }))}
+                placeholder="https://…" />
+              <span className="afh-field-hint">
+                Paste the event's ticket page. The home page and reminder emails then show a “Get tickets” button.
+              </span>
             </div>
             {error && <div className="server-error" role="alert">{error}</div>}
             {result && <div className="send-success" role="status">{result}</div>}
