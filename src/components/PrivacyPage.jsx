@@ -20,8 +20,8 @@ const COLLECTED = [
   },
   {
     title: 'Keeping sign-in safe',
-    what: 'When someone asks for a sign-in link or types an admin password wrong, we keep a scrambled record of the email or network address used. It cannot be turned back into the original.',
-    why: 'To limit repeated attempts, so nobody can flood your inbox or guess a password. These records are deleted after one day.',
+    what: 'When someone asks for a sign-in link, sends one of our forms or types an admin password wrong, we keep a scrambled record of the email or network address used. It cannot be turned back into the original.',
+    why: 'To limit repeated attempts, so nobody can flood your inbox, flood our forms or guess a password. These records are deleted after one day.',
   },
   {
     title: 'The “Learn or teach” board',
