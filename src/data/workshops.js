@@ -30,6 +30,8 @@ export const WORKSHOPS = [
     title: 'AI for Nonprofits',
     audience: 'Staff, boards and volunteers',
     examples: ['A grant paragraph', 'A volunteer schedule', 'A donor thank-you'],
+    ready: true,
+    to: '/ai-for-nonprofits',
   },
   {
     id: 'educators',

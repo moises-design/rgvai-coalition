@@ -4,6 +4,8 @@
 // is what the page shows and what goes in the speaker notes. {{tokens}} are
 // filled with a sample business or the visitor's own details.
 
+import { makeFill } from './workshopFill.js'
+
 const BASE = '/ai-for-small-business'
 
 export const SMALL_BUSINESS = {
@@ -140,20 +142,46 @@ export const SMALL_BUSINESS = {
     title: 'Want this for your group?',
     body: 'We bring the slides, this follow-along page and the QR codes. You bring the room.',
   },
+
+  // Text for the slides that are not prompts (scripts/build-workshop-deck.py).
+  // `notes` is the fuller wording, kept in the speaker notes.
+  deck: {
+    slug: 'ai-for-small-business',
+    tagline: 'Get your evenings back.',
+    presenters: [
+      { name: 'Moises Segovia', side: 'Runs businesses here', items: ['Owner, Life Star EMS', 'Co-owner, Rio Care EMS', 'Former EMT', 'Building Vital Care'] },
+      { name: 'Rich Gomez', side: 'Marketing and systems', items: ['15+ years in marketing', 'Biomed tech in clinics', 'Builds follow-up automation'] },
+    ],
+    goal: 'less busywork after closing.',
+    problem: {
+      cards: [
+        ['Reviews', 'Every one deserves an answer.'],
+        ['Social posts', 'A week of them, every week.'],
+        ['Quotes', 'Sent, then never chased.'],
+        ['Follow-ups', 'The first thing to slip.'],
+      ],
+      notes: 'Ask the room which of these they did last night. Reviews that need an answer, the week of social posts, quotes that were sent and never chased, and follow-ups with customers. None of it is the work they opened the business to do.',
+    },
+    rules: {
+      bullets: [
+        ['Use only your facts.', ' Tell it what is true.'],
+        ['No customer data.', ' Names, numbers and cards stay out.'],
+        ['Check before you post.', ' Confident can still be wrong.'],
+      ],
+      cardTitle: 'You are still the owner.',
+      cardBody: 'AI writes the first draft. You approve the last one.',
+      notes: 'Use only your facts: tell the AI what is true, and tell it not to invent prices, awards or quotes.\nNo customer data: names, phone numbers and payment details stay out of the AI tool.\nCheck before you post: a confident answer can still be wrong. Read it, count it, read the Spanish out loud.\n\nAI writes the first draft. You approve the last one.',
+    },
+    habit: {
+      items: [
+        ['Monday: plan the week of posts', 'Prompt 2. Schedule them and you are done.'],
+        ['Every day: answer new reviews', 'Prompt 1. Read each reply before you post.'],
+        ['Friday: follow up on open quotes', 'Prompt 3. One short text each.'],
+      ],
+      notes: 'Monday: plan the week of posts with prompt 2, then schedule them.\nEvery day: answer new reviews with prompt 1, and read each reply before you post it.\nFriday: follow up on open quotes with prompt 3, one text each.\n\nThe point is a routine, so the work stops waiting until after closing.',
+    },
+    closeLine: 'The prompts stay online. Bring this workshop to your group.',
+  },
 }
 
-const BRACKETS = { business: '[business name]', city: '[city]', phone: '[phone]', hours: '[days and hours]' }
-
-// Splits a template into segments: plain text, the visitor's own value
-// ('own') or the sample value ('sample').
-export function fillBusiness(template, values) {
-  const { sample } = SMALL_BUSINESS.details
-  return template.split(/(\{\{\w+\}\})/).filter(Boolean).map(part => {
-    const match = /^\{\{(\w+)\}\}$/.exec(part)
-    if (!match) return { text: part, kind: 'text' }
-    const own = (values?.[match[1]] || '').trim()
-    if (own) return { text: own, kind: 'own' }
-    if (sample[match[1]]) return { text: sample[match[1]], kind: 'sample' }
-    return { text: BRACKETS[match[1]] || part, kind: 'bracket' }
-  })
-}
+export const fillBusiness = makeFill(SMALL_BUSINESS.details)

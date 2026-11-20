@@ -12,6 +12,7 @@ import PrivacyPage from './components/PrivacyPage'
 import WorkshopsPage from './components/WorkshopsPage'
 import UnsubscribePage from './components/UnsubscribePage'
 import AiForSmallBusinessPage from './components/AiForSmallBusinessPage'
+import AiForNonprofitsPage from './components/AiForNonprofitsPage'
 import './App.css'
 import './theme.css'
 import './home.css'
@@ -43,6 +44,7 @@ export default function App() {
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/unsubscribe" element={<UnsubscribePage />} />
         <Route path="/ai-for-small-business" element={<AiForSmallBusinessPage />} />
+        <Route path="/ai-for-nonprofits" element={<AiForNonprofitsPage />} />
         <Route path="/admin" element={<AdminRoute />} />
         <Route path="/superadmin" element={<SuperAdminRoute />} />
         <Route path="/member" element={<MemberPortal />} />
